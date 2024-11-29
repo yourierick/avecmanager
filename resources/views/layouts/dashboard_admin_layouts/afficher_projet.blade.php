@@ -11,7 +11,7 @@
             <div class="col-xs-12 col-md-6">
                 @if($projet->statut === "en attente")
                     <button name="action" class="btn btn-primary text-light fs-5" value="donner_le_go" type="submit">donner le go</button>
-                    <button data-bs-toggle="modal" data-bs-target="#ModalCloture" class="btn btn-warning text-light fs-5" type="button">clôturer le projet</button>
+                    <button data-bs-toggle="modal" data-bs-target="#ModalCloture" class="btn btn-warning text-light fs-5" type="button">clôturer</button>
                     <div class="modal fade" id="ModalCloture" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -49,7 +49,7 @@
             </div>
             <div class="col-xs-12 col-md-6">
                 @if($projet->statut === "en attente" || $projet->statut === "clôturé")
-                    <button data-bs-toggle="modal" data-bs-target="#ModalSup" style="float: right"  class="btn btn-danger text-light fs-5" type="button">supprimer le projet</button>
+                    <button data-bs-toggle="modal" data-bs-target="#ModalSup" style="float: right"  class="btn btn-danger text-light fs-5" type="button">supprimer</button>
                     <div class="modal fade" id="ModalSup" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
