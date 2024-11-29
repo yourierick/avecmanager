@@ -111,6 +111,10 @@
         <form method="post" action="{{ route("register") }}" id="formulaire" class="mt-6 space-y-6 bg-white p-4"
               enctype="multipart/form-data">
             @csrf
+            <div>
+                <img id="imagePreview" src="{{ asset('assets/utilisateur.png') }}" alt=""
+                     style="width: 100px; height: 100px; border-radius: 50px" class="mb-2">
+            </div>
             <div class="mb-3">
                 <div class="form-group form-group-default">
                     <label>photo de profile</label>
@@ -119,6 +123,8 @@
                         type="file"
                         class="form-control"
                         name="photo"
+                        accept=".jpeg, .jpg, .png"
+                        onchange="file_validate(this)"
                         placeholder="photo de profile"
                         value="{{ old('photo') }}"
                     />
@@ -343,7 +349,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button type="submit" id="addRowButton" class="btn btn-primary">
+                                                    <button type="submit" id="addRowButtonAxe" class="btn btn-primary">
                                                         soumettre
                                                     </button>
                                                 </form>
@@ -555,7 +561,7 @@
 
             var action = '<td> <div class="form-button-action"><button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
 
-            $("#addRowButton").click(function () {
+            $("#addRowButtonAxe").click(function () {
                 $("#add-row")
                     .dataTable()
                     .fnAddData([
@@ -566,4 +572,5 @@
             });
         });
     </script>
+    <script src="{{ asset("js/personnal_scripts/file_validator.js") }}"></script>
 @endsection

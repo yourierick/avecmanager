@@ -14,7 +14,8 @@
                      style="width: 100px; height: 100px; border-radius: 50px" class="mb-2">
             </div>
             <div class="mb-3">
-                <x-text-input id="id_photo" class="block mt-1 w-full" type="file" class="form-control" name="photo"/>
+                <x-text-input id="id_photo" class="block mt-1 w-full" accept=".jpeg, .jpg, .png"
+                              onchange="file_validate(this)" type="file" class="form-control" name="photo"/>
                 <x-input-error :messages="$errors->get('photo')" class="mt-2 text-danger"/>
             </div>
             <div class="mb-3">
@@ -155,5 +156,6 @@
         @endif
     </script>
     <script src="{{ asset("js/register.js") }}"></script>
+    <script src="{{ asset("js/personnal_scripts/file_validator.js") }}"></script>
 @endsection
 

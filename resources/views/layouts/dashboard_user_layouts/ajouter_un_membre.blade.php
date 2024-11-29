@@ -17,6 +17,8 @@
                         type="file"
                         class="form-control"
                         name="photo"
+                        accept=".jpeg, .jpg, .png"
+                        onchange="file_validate(this)"
                         placeholder="photo de profile"
                         value="{{ old('photo') }}"
                     />
@@ -115,4 +117,5 @@
             });
         @endif
     </script>
+    <script src="{{ asset("js/personnal_scripts/file_validator.js") }}"></script>
 @endsection

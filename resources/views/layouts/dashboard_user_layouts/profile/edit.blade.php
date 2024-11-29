@@ -35,7 +35,8 @@
                      style="width: 100px; height: 100px; border-radius: 50px" class="mb-2">
             </div>
             <div class="mb-3">
-                <input id="id_photo" name="photo" value="{{ $user->photo }}" type="file" class="form-control"/>
+                <input id="id_photo" accept=".jpeg, .jpg, .png"
+                       onchange="file_validate(this)" name="photo" value="{{ $user->photo }}" type="file" class="form-control"/>
                 <x-input-error class="mt-2 text-danger" :messages="$errors->get('photo')" />
             </div>
 
@@ -195,4 +196,5 @@
         });
         @endif
     </script>
+    <script src="{{ asset("js/personnal_scripts/file_validator.js") }}"></script>
 @endsection

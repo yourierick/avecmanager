@@ -242,6 +242,8 @@
                                 type="text"
                                 class="form-control"
                                 name="nom"
+                                accept=".jpeg, .jpg, .png"
+                                onchange="file_validate(this)"
                                 placeholder="nom de l'utilisateur"
                                 value="{{ $membre->nom }}"
                                 required
@@ -341,4 +343,5 @@
             });
         @endif
     </script>
+    <script src="{{ asset("js/personnal_scripts/file_validator.js") }}"></script>
 @endsection
