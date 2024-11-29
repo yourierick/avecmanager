@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.container {
+  padding: 0 15px;
+  min-height: 100vh;
+  justify-content: center;
+  background: #f0f2f5;
+}
+
+.fade-page {
+  justify-content: space-between;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.fade-page .text {
+  margin-bottom: 90px;
+}
+
+.fade-page h1 {
+  color: #176707;
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+.fade-page p {
+  font-size: 1.75rem;
+  white-space: nowrap;
+}
+
+.fade-page .social-icons{
+  margin-top: 12px;
+}
+
+.fade-page .social-icons a i {
+    font-size: 22px;
+    color: #253dd9;
+    margin-right: 10px;
+    transition: .5s ease;
+}
+.fade-page .social-icons a:hover i {
+    transform: scale(1.2);
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+}
+form h2{
+    font-size: 40px;
+    text-align: center;
+    color: #123da8;
+    font-family: "Karla", sans-serif;
+}
+form .input-box{
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border-bottom: 2px solid #e4e4e4;
+    margin: 10px 0;
+}
+
+.input-box input{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #000000;
+    font-weight: 500;
+    padding: 0 14px;
+}
+.input-box label{
+    position: absolute;
+    top: 10%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 16px;
+    font-weight: 500;
+    pointer-events: none;
+    transition: .5s ease;
+    color: #123da8;
+}
+.input-box input:focus~label,
+.input-box input:valid~label{
+    top: -10px;
+}
+.input-box .icon{
+    position: absolute;
+    right: 0;
+    top: 13px;
+    font-size: 19px;
+    color: #123da8;
+}
+
+form .remember-forgot{
+    font-size: 14.5px;
+    font-weight: 500;
+    margin: -15px 0 15px;
+    display: flex;
+    justify-content: space-between;
+}
+.remember-forgot label input{
+    accent-color: #8d8787;
+}
+.remember-forgot a{
+    color: #9a9898;
+    text-decoration: none;
+}
+.remember-forgot a:hover {
+    text-decoration: underline;
+}
+
+.btn{
+    width: 100%;
+    height: 45px;
+    background: #105ec4;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #e4e4e4;
+    font-weight: 500;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+}
+
+@media (max-width: 1050px) {
+  .fade-page {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px;
+  }
+  .fade-page .text {
+    margin-bottom: 30px;
+  }
+}
+@media (max-width: 460px) {
+  .fade-page h1 {
+    font-size: 1.7rem;
+  }
+  .fade-page .logo_img{
+    height: 30px;
+    width: 70px;
+  }
+  .fade-page p {
+    font-size: 0.8rem;
+  }
+  .fade-page{
+    padding: 12px;
+  }
+  form {
+    padding: 15px;
+  }
+}
+
+.fade-page .logo_img {
+    height: 100px;
+    width: 100px;
+}

@@ -1,0 +1,47 @@
+#detail-agent .small-info{
+    font-size:8pt;
+}
+.img-echo{
+    filter: grayscale(40%) brightness(70%);
+    animation:  scaling 1s ease-in-out;
+    transition: 2s;
+}
+.img-echo:hover{
+    filter: brightness(100%);
+    transition: .6s ease-in-out;
+    transform: scale(104%);
+
+}
+#msg-error{
+    animation: scaling .6s ease-in-out;
+}
+#input-desabled{
+    opacity: .3;
+}
+/*#msg-toast{*/
+/*    animation: 2s toast-out  0s linear;*/
+/*}*/
+@keyframes scaling {
+    0%{
+       transform: scale(0%);
+        transform-origin: top;
+    }
+    50%{
+        transform: scale(102%);
+        transform-origin: center;
+    }
+    100%{
+        transform: scale(100%);
+        transform-origin: left;
+    }
+}
+
+/*@keyframes toast-out {*/
+/*    from{*/
+/*        display: initial;*/
+/*    }*/
+/*    to{*/
+/*        display: none;*/
+/*    }*/
+/*}*/
+
