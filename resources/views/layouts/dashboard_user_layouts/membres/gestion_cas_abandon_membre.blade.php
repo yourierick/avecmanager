@@ -20,7 +20,7 @@
 @section('page_courant', "membre de l'avec")
 @section('content')
     <hr>
-    <div class="row row-card-no-pd p-4 bg-white" style="background-color: transparent">
+    <div class="row-card-no-pd p-4 bg-white" style="background-color: transparent">
         <h1 style="font-weight: bold"><span class="bi bi-exclamation-triangle text-warning" style="font-size: 24pt"></span> cas d'abandon d'un membre</h1>
         <div style="margin-left: 40px">
             <p>Vous voyez ceci car vous avez changé le statut de @if($membre->sexe === "homme") monsieur
@@ -51,15 +51,15 @@
                     </div>
                     <x-input-error :messages="$errors->get('mois_id')" class="mt-2 text-danger"/>
                 </div>
-                <div class="form-check">
+                <div>
                     <label>
-                        <input name="calculpart" type="checkbox" id="flexCheckpart">
+                        <input name="calculpart" type="checkbox" checked readonly id="flexCheckpart">
                         Les parts achetées par @if($membre->sexe === "homme") monsieur
                         @else madame @endif {{ $membre->nom }} doivent lui être rendu moins le montant de sa dette.
                     </label>
                 </div>
-                <div class="form-check">
-                    <label>
+                <div>
+                    <label class="text-danger">
                         <input name="calculinteret" type="checkbox" id="flexCheckinteret">
                         Les intérêts sur les parts achetées par @if($membre->sexe === "homme") monsieur
                         @else madame @endif {{ $membre->nom }} doivent être calculés et rendu à @if($membre->sexe === "homme") monsieur
@@ -68,7 +68,7 @@
                 </div>
 
                 <br><p><span class="bi bi-exclamation-triangle text-danger" style="font-size: 12pt"></span> Avant de continuer, sachez que cette action est irréversible.
-                    Toutes les transactions effectuées par ce membre seront définitivement supprimées. cliquer sur continuer pour poursuivre.
+                    Toutes les transactions effectuées par ce membre seront définitivement gelées. cliquer sur continuer si vous êtes sûr de poursuivre.
                 </p>
 
                 <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#modal">
