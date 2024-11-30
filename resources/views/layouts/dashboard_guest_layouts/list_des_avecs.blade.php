@@ -49,7 +49,7 @@
                                 <tr class="ligne ln-pdf">
                                     <td class="cell-td">{{ $loop->iteration }}</td>
                                     <td class="cell-td">{{ $avec->code }}</td>
-                                    <td class="cell-td">{{ $avec->designation }} mois</td>
+                                    <td class="cell-td">{{ $avec->designation }}</td>
                                     <td class="cell-td">{{ $avec->axe->designation }}</td>
                                     <td class="cell-td">{{ $avec->membres->where("statut", "!=", "abandon")->count() }}</td>
                                     <td class="cell-td">{{ $avec->membres->where("statut", "!=", "abandon")->where("sexe", "homme")->count() }}</td>
