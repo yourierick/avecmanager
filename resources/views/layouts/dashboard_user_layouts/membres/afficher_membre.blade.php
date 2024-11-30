@@ -23,7 +23,7 @@
                 <ul class="dropdown-menu p-2" role="menu" style="background-color: #ffffff; border: 1px solid blue">
                     <li>
                         @if($projet->statut === "en cours")
-                            @if($avec->membres->count() >= 15 && $avec->membres->count() <= 15 || $transactionsCount != 0)
+                            @if($avec->membres->count() >= 15 && $avec->membres->count() <= 30 || $transactionsCount != 0)
                                 @if($membre->statut === "actif")
                                     @if($current_user->autorisations)
                                         @if(in_array("peux faire une transaction", json_decode($current_user->autorisations, true)))
