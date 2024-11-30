@@ -181,18 +181,18 @@
                 <div class="mb-3">
                     <div class="form-group form-group-default m-0">
                         <label for="select_regle">règles de taxations de l'amande</label>
-                        @if($membre->credit == 0)
+                        @if($membre->credit > 0)
                             <div class="row p-4">
-                                <div class="col-3">
+                                <div class="col-md-3 col-xs-12">
                                     <div class="d-flex">
                                         <input type="checkbox" onchange="check_div_retard_remboursement(this)" value="0" class="mr-2" id="amande_reglement">
                                         <label style="text-transform: lowercase; font-size: 10pt!important; color: #15b01c!important" for="amande_reglement">rétard de réglement de dette</label>
                                     </div>
                                 </div>
-                                <div class="col-9">
+                                <div class="col-md-3 col-xs-12">
                                     <div class="input-group mb-3" id="div_montant_reglement_en_retard" style="display: none">
                                         <span class="input-group-text">Montant de l'amande</span>
-                                        <input type="number" onchange="calculateamanderetardreglement(this)" value="0" min="0" step="any" id="montant_amande_reglement" name="amande_reglement" class="form-control ml-4 amande_a_payer">
+                                        <input type="number" onchange="calculateamanderetardreglement(this)" value="0" min="0" step="any" id="montant_amande_reglement" name="amande_reglement" class="form-control ml-2 amande_a_payer">
                                         <span class="input-group-text">FC</span>
                                     </div>
                                 </div>
