@@ -32,7 +32,7 @@ class GuestController extends Controller
 
         $breadcrumbs = [
             ['url'=>url('guest_dashboard', $projet->id), 'label'=>'Accueil'],
-            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Avecs'],
         ];
 
         return view('layouts.dashboard_guest_layouts.list_des_avecs',
@@ -56,8 +56,8 @@ class GuestController extends Controller
 
         $breadcrumbs = [
             ['url'=>url('guest_dashboard', $projet->id), 'label'=>'Accueil'],
-            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>"Vue de l'avec"],
         ];
 
         return view("layouts.dashboard_guest_layouts.afficher_avec", compact("avec",
@@ -90,9 +90,8 @@ class GuestController extends Controller
         }
 
         $breadcrumbs = [
-            ['url'=>url('guest_dashboard', $projet->id), 'label'=>'Accueil'],
-            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Vue'],
             ['url'=>url('display_membre', $membre->id), 'label'=>'Afficher un membre'],
         ];
 
@@ -152,15 +151,14 @@ class GuestController extends Controller
         $credit = $membre->credit + $membre->interets_sur_credit;
 
         $breadcrumbs = [
-            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('display_membre', $membre->id), 'label'=>'Afficher un membre'],
-            ['url'=>url('report_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport des transactions du membre'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Vue'],
+            ['url'=>url('display_membre', $membre->id), 'label'=>'Membre'],
+            ['url'=>url('report_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Transactions'],
         ];
 
         return view('layouts.dashboard_guest_layouts.reports.rapport_transactions_membre', ['current_user' => $request->user(),
             'transactions' => $transactions, "breadcrumbs"=>$breadcrumbs, "projet"=>$projet, "avec"=>$avec, "membre"=>$membre, "parts"=>$parts, "credit"=>$credit,
-            ]);
+        ]);
     }
 
     public function report_analytique_du_membre($membre_id, $projet_id, $avec_id, Request $request) {
@@ -207,9 +205,9 @@ class GuestController extends Controller
         $current_user = $request->user();
 
         $breadcrumbs = [
-            ['url'=>url('display_membre', $membre->id), 'label'=>'Afficher un membre'],
-            ['url'=>url('report_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport des transactions du membre'],
-            ['url'=>url('report_analytique_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport analytique des transactions du membre'],
+            ['url'=>url('display_membre', $membre->id), 'label'=>'Membre'],
+            ['url'=>url('report_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Transactions'],
+            ['url'=>url('report_analytique_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Analyse des transactions'],
         ];
 
         return view('layouts.dashboard_guest_layouts.reports.rapport_analytique_membre', compact('labels',
@@ -260,10 +258,9 @@ class GuestController extends Controller
         $current_user = $request->user();
 
         $breadcrumbs = [
-            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('report_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport des transactions de l'avec"],
-            ['url'=>url('report_analytique_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport analytique des transactions de l'avec"],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Vue'],
+            ['url'=>url('report_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Transactions"],
+            ['url'=>url('report_analytique_de_avec', [$avec->id, $projet->id]), 'label'=>"Analyse des transactions"],
         ];
 
         return view('layouts.dashboard_guest_layouts.reports.rapport_analytique_avec', compact('labels',
@@ -309,9 +306,9 @@ class GuestController extends Controller
         }
 
         $breadcrumbs = [
-            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('report_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport des transactions de l'avec"],
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Vue'],
+            ['url'=>url('report_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Transactions"],
         ];
 
         return view('layouts.dashboard_guest_layouts.reports.rapport_transactions_avec', compact("projet",
@@ -363,9 +360,9 @@ class GuestController extends Controller
         }
 
         $breadcrumbs = [
-            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('situation_gen_avec', [$avec->id, $projet->id]), 'label'=>"Situation générale de l'avec"],
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Vue'],
+            ['url'=>url('situation_gen_avec', [$avec->id, $projet->id]), 'label'=>"Situation de l'avec"],
         ];
 
         return view('layouts.dashboard_guest_layouts.reports.situation_generale_avec', compact("projet", "avec",
@@ -406,9 +403,9 @@ class GuestController extends Controller
         }
 
         $breadcrumbs = [
-            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('transactions_caisse_solidarite', [$avec->id, $projet->id]), 'label'=>"Rélevé des transactions caisse solidarité"],
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Vue'],
+            ['url'=>url('transactions_caisse_solidarite', [$avec->id, $projet->id]), 'label'=>"Transactions"],
         ];
 
         return view('layouts.dashboard_guest_layouts.reports.releve_transactions_de_soutien', compact("projet",

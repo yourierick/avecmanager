@@ -38,7 +38,7 @@ class DashboardController extends Controller
 
         $breadcrumbs = [
             ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
-            ['url'=>url('manage_user'), 'label'=>'Liste des utilisateurs'],
+            ['url'=>url('manage_user'), 'label'=>'Utilisateurs'],
         ];
 
         return view('layouts.dashboard_admin_layouts.user_manager.list_users', ['users' => $users,
@@ -341,8 +341,8 @@ class DashboardController extends Controller
 
         $breadcrumbs = [
             ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
-            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
-            ['url'=>url('configuration_projet', $projet_id), 'label'=>'Configuration du projet'],
+            ['url'=>url('list_projet'), 'label'=>'Projets'],
+            ['url'=>url('configuration_projet', $projet_id), 'label'=>'Configuration'],
         ];
 
         return view('layouts.dashboard_admin_layouts.configuration_projet', ['current_user' => $request->user(),
@@ -410,8 +410,8 @@ class DashboardController extends Controller
 
         $breadcrumbs = [
             ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
-            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
-            ['url'=>url('afficher_projet', $projet_id), 'label'=>'Afficher un projet'],
+            ['url'=>url('list_projet'), 'label'=>'Projets'],
+            ['url'=>url('afficher_projet', $projet_id), 'label'=>'Afficher'],
         ];
 
         $total_abandons = Membre::whereHas('avec', function($query) use ($projet_id) {
@@ -498,10 +498,9 @@ class DashboardController extends Controller
         $projet_count = ProjetAvec::all()->count();
 
         $breadcrumbs = [
-            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
-            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
-            ['url'=>url('afficher_projet', $projet_id), 'label'=>'Afficher un projet'],
-            ['url'=>url('list_des_avecs', $projet_id), 'label'=>'Liste des avecs'],
+            ['url'=>url('list_projet'), 'label'=>'Projets'],
+            ['url'=>url('afficher_projet', $projet_id), 'label'=>'Afficher'],
+            ['url'=>url('list_des_avecs', $projet_id), 'label'=>'Avecs'],
         ];
 
         return view('layouts.dashboard_admin_layouts.list_des_avecs',
@@ -534,10 +533,8 @@ class DashboardController extends Controller
         $projet_count = ProjetAvec::all()->count();
 
         $breadcrumbs = [
-            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
-            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
-            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
-            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher'],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Avecs'],
             ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
         ];
 
@@ -587,11 +584,9 @@ class DashboardController extends Controller
         }
 
         $breadcrumbs = [
-            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
-            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
-            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
-            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher'],
+            ['url'=>url('afficher_membre', $membre->id), 'label'=>'Membre'],
         ];
 
         return view('layouts.dashboard_admin_layouts.afficher_un_membre', compact("membre",
@@ -606,10 +601,9 @@ class DashboardController extends Controller
         $projet = ProjetAvec::find($projet_id);
 
         $breadcrumbs = [
-            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
-            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
-            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
-            ['url'=>url('list_du_personnel_projet', $projet->id), 'label'=>'Liste du personnel projet'],
+            ['url'=>url('list_projet'), 'label'=>'Projets'],
+            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher'],
+            ['url'=>url('list_du_personnel_projet', $projet->id), 'label'=>'Personnel'],
         ];
 
         return view('layouts.dashboard_admin_layouts.list_personnel_assigne', ['current_user'=>$request->user(),

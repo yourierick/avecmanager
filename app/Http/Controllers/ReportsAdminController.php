@@ -69,10 +69,9 @@ class ReportsAdminController extends Controller
         $projet_count = ProjetAvec::all()->count();
 
         $breadcrumbs = [
-            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('afficher_membre', $membre->id), 'label'=>'Afficher un membre'],
-            ['url'=>url('rapport_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport des transactions du membre'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Vue'],
+            ['url'=>url('afficher_membre', $membre->id), 'label'=>'Membre'],
+            ['url'=>url('rapport_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Transactions'],
         ];
 
         return view('layouts.dashboard_admin_layouts.reports.rapport_transactions_membre', ['current_user' => $request->user(),
@@ -125,10 +124,9 @@ class ReportsAdminController extends Controller
         $projet_count = ProjetAvec::all()->count();
 
         $breadcrumbs = [
-            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('afficher_membre', $membre->id), 'label'=>'Afficher un membre'],
-            ['url'=>url('rapport_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport des transactions du membre'],
-            ['url'=>url('rapport_analytique_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport analytique des transactions du membre'],
+            ['url'=>url('afficher_membre', $membre->id), 'label'=>'Membre'],
+            ['url'=>url('rapport_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Transactions'],
+            ['url'=>url('rapport_analytique_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Analyse des transactions'],
         ];
 
         return view('layouts.dashboard_admin_layouts.reports.rapport_analytique_membre', compact('labels',
@@ -180,9 +178,9 @@ class ReportsAdminController extends Controller
         $projet_count = ProjetAvec::all()->count();
 
         $breadcrumbs = [
-            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('rapport_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport des transactions de l'avec"],
-            ['url'=>url('rapport_analytique_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport analytique des transactions de l'avec"],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Vue'],
+            ['url'=>url('rapport_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Transactions"],
+            ['url'=>url('rapport_analytique_de_avec', [$avec->id, $projet->id]), 'label'=>"Analyse des transactions"],
         ];
 
         return view('layouts.dashboard_admin_layouts.reports.rapport_analytique_avec', compact('labels',
@@ -229,10 +227,9 @@ class ReportsAdminController extends Controller
         $projet_count = ProjetAvec::all()->count();
 
         $breadcrumbs = [
-            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
-            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('rapport_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport des transactions de l'avec"],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'vue'],
+            ['url'=>url('rapport_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Transactions"],
         ];
 
         return view('layouts.dashboard_admin_layouts.reports.rapport_transactions_avec', compact("projet",
@@ -285,9 +282,8 @@ class ReportsAdminController extends Controller
         $projet_count = ProjetAvec::all()->count();
 
         $breadcrumbs = [
-            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
-            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Vue'],
             ['url'=>url('situation_generale_de_avec', [$avec->id, $projet->id]), 'label'=>"Situation générale de l'avec"],
         ];
 
@@ -330,10 +326,9 @@ class ReportsAdminController extends Controller
         $projet_count = ProjetAvec::all()->count();
 
         $breadcrumbs = [
-            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
-            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
-            ['url'=>url('releve_des_transactions_caisse_solidarite', [$avec->id, $projet->id]), 'label'=>"Rélevé des transactions de la caisse solidarité"],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Vue'],
+            ['url'=>url('releve_des_transactions_caisse_solidarite', [$avec->id, $projet->id]), 'label'=>"Transactions"],
         ];
 
         return view('layouts.dashboard_admin_layouts.reports.releve_transactions_de_soutien', compact("projet",

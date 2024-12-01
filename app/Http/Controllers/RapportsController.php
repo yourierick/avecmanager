@@ -72,11 +72,9 @@ class RapportsController extends Controller
         $credit = $membre->credit + $membre->interets_sur_credit;
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
-            ['url'=>url('afficher_un_membre', $membre->id), 'label'=>"Afficher le membre"],
-            ['url'=>url('rapport_transactions_membre', [$membre_id, $avec_id, $projet_id]), 'label'=>"Rapports des transactions du membre"],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue"],
+            ['url'=>url('afficher_un_membre', $membre->id), 'label'=>"Membre"],
+            ['url'=>url('rapport_transactions_membre', [$membre_id, $avec_id, $projet_id]), 'label'=>"Transactions"],
         ];
 
         return view('layouts.dashboard_user_layouts.rapports.rapport_transactions_membre', ['current_user' => $request->user(),
@@ -128,12 +126,9 @@ class RapportsController extends Controller
         $current_user = $request->user();
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
-            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Afficher le membre"],
-            ['url'=>url('rapport_transactions_membre', [$membre_id, $avec_id, $projet_id]), 'label'=>"Rapports des transactions du membre"],
-            ['url'=>url('rapport_analytique_membre', [$membre_id, $avec_id, $projet_id]), 'label'=>"Rapport analytique du membre"],
+            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Membre"],
+            ['url'=>url('rapport_transactions_membre', [$membre_id, $avec_id, $projet_id]), 'label'=>"Transactions"],
+            ['url'=>url('rapport_analytique_membre', [$membre_id, $avec_id, $projet_id]), 'label'=>"Analyse des transactions"],
         ];
 
         return view('layouts.dashboard_user_layouts.rapports.rapport_analytique_membre', compact('labels',
@@ -185,11 +180,9 @@ class RapportsController extends Controller
         $current_user = $request->user();
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
-            ['url'=>url('rapport_transactions_avec', [$avec_id, $projet_id]), 'label'=>"Rapports des transactions de l'avec"],
-            ['url'=>url('rapport_analytique_avec', [$avec_id, $projet_id]), 'label'=>"Rapport analytique de l'avec"],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue"],
+            ['url'=>url('rapport_transactions_avec', [$avec_id, $projet_id]), 'label'=>"Transactions"],
+            ['url'=>url('rapport_analytique_avec', [$avec_id, $projet_id]), 'label'=>"Analyse des transactions"],
         ];
 
         return view('layouts.dashboard_user_layouts.rapports.rapport_analytique_avec', compact('labels',
@@ -236,10 +229,9 @@ class RapportsController extends Controller
         }
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
-            ['url'=>url('rapport_transactions_avec', [$avec_id, $projet_id]), 'label'=>"Rapports des transactions du membre"],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue"],
+            ['url'=>url('rapport_transactions_avec', [$avec_id, $projet_id]), 'label'=>"Transactions"],
         ];
 
         return view('layouts.dashboard_user_layouts.rapports.rapport_transactions_avec', compact("projet",
@@ -291,9 +283,8 @@ class RapportsController extends Controller
         }
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue"],
             ['url'=>url('situation_generale_avec', [$avec_id, $projet_id]), 'label'=>"Situation générale de l'avec"],
         ];
 
@@ -335,7 +326,6 @@ class RapportsController extends Controller
         }
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
             ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
             ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
             ['url'=>url('releve_transactions_caisse_solidarite', [$avec_id, $projet_id]), 'label'=>"Rélevé des transactions caisse solidarité"],

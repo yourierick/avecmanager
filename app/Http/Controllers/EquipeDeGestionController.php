@@ -41,7 +41,7 @@ class EquipeDeGestionController extends Controller
 
         $breadcrumbs = [
             ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('lists_personnel', $projet_id), 'label'=>'Liste du personnel'],
+            ['url'=>url('lists_personnel', $projet_id), 'label'=>'Personnel'],
         ];
 
         return view('layouts.dashboard_user_layouts.list_personnel_assigne', ['current_user' => $request->user(),
@@ -60,7 +60,7 @@ class EquipeDeGestionController extends Controller
 
         $breadcrumbs = [
             ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet_id), 'label'=>'Liste des avecs'],
+            ['url'=>url('list_avecs', $projet_id), 'label'=>'Avecs'],
         ];
 
         $projet = ProjetAvec::find($projet_id);
@@ -74,8 +74,8 @@ class EquipeDeGestionController extends Controller
         $superviseurs = User::where('projet_id', $projet_id)->where("fonction", "superviseur")->get();
         $breadcrumbs = [
             ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_personnel_projet', $projet_id), 'label'=>'Liste du personnel'],
-            ['url'=>url('ajouter_un_animateur', $projet_id), 'label'=>'Ajouter un animateur'],
+            ['url'=>url('list_personnel_projet', $projet_id), 'label'=>'Personnel'],
+            ['url'=>url('ajouter_un_animateur', $projet_id), 'label'=>'Nouvel animateur'],
         ];
         return view('layouts.dashboard_user_layouts.ajouter_un_animateur', ['current_user' => $request->user(),
             'projet' => $projet, "superviseurs" => $superviseurs, "breadcrumbs"=>$breadcrumbs]);
@@ -132,8 +132,8 @@ class EquipeDeGestionController extends Controller
 
         $breadcrumbs = [
             ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet_id), 'label'=>'Liste des avecs'],
-            ['url'=>url('ajouter_une_avec', $projet_id), 'label'=>'Ajouter une avec'],
+            ['url'=>url('list_avecs', $projet_id), 'label'=>'Avecs'],
+            ['url'=>url('ajouter_une_avec', $projet_id), 'label'=>'Nouvel avec'],
         ];
 
         return view('layouts.dashboard_user_layouts.ajouter_une_avec', compact("projet",
@@ -230,8 +230,8 @@ class EquipeDeGestionController extends Controller
 
         $breadcrumbs = [
             ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec_id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('afficher_avec', $avec_id), 'label'=>"Vue de l'avec"],
         ];
 
         return view('layouts.dashboard_user_layouts.afficher_avec',
@@ -248,10 +248,9 @@ class EquipeDeGestionController extends Controller
         $projet = ProjetAvec::find($avec->projet_id);
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec_id), 'label'=>"Vue globale de l'avec"],
-            ['url'=>url('ajouter_un_membre', $avec_id), 'label'=>"Ajouter un membre dans l'avec"],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('afficher_avec', $avec_id), 'label'=>"Vue"],
+            ['url'=>url('ajouter_un_membre', $avec_id), 'label'=>"Ajouter un membre"],
         ];
 
         return view('layouts.dashboard_user_layouts.ajouter_un_membre', ['current_user' => $request->user(),
@@ -412,10 +411,9 @@ class EquipeDeGestionController extends Controller
         }
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
-            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Afficher un membre"],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue"],
+            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Membre"],
         ];
 
         return view('layouts.dashboard_user_layouts.membres.afficher_membre',
@@ -472,11 +470,9 @@ class EquipeDeGestionController extends Controller
         $cycle_de_gestion = CycleDeGestion::where("projet_id", $projet->id)->get();
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
-            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Afficher un membre"],
-            ['url'=>url('gestion_cas_abandon_membre', [$membre_id, $avec->id]), 'label'=>"Gestion d'un cas d'abandon"],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue"],
+            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Membre"],
+            ['url'=>url('gestion_cas_abandon_membre', [$membre_id, $avec->id]), 'label'=>"Cas d'abandon"],
         ];
 
         return view("layouts.dashboard_user_layouts.membres.gestion_cas_abandon_membre", compact("avec",
@@ -602,11 +598,9 @@ class EquipeDeGestionController extends Controller
         $current_user = $request->user();
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
-            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Afficher un membre"],
-            ['url'=>url('transactions_hebdomadaire', $membre_id), 'label'=>"Nouvelle transaction hebdomadaire"],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue"],
+            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Membre"],
+            ['url'=>url('transactions_hebdomadaire', $membre_id), 'label'=>"Nouvelle transaction"],
         ];
 
         return view('layouts.dashboard_user_layouts.membres.transactions', compact("membre", "avec",
@@ -943,10 +937,8 @@ class EquipeDeGestionController extends Controller
         $montanttotal = $caissesolidarite ? $caissesolidarite->montant : 0;
 
         $breadcrumbs = [
-            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
-            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
-            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
-            ['url'=>url('releve_transactions_caisse_solidarite', [$avec_id, $projet_id]), 'label'=>"Rélevé des transactions caisse solidarité"],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue"],
+            ['url'=>url('releve_transactions_caisse_solidarite', [$avec_id, $projet_id]), 'label'=>"Rélevé"],
             ['url'=>url('assister_un_membre', [$avec_id, $projet_id]), 'label'=>"Assister un membre"],
         ];
 
