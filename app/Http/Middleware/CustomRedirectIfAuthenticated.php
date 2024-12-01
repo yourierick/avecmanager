@@ -37,7 +37,7 @@ class CustomRedirectIfAuthenticated
                 Auth::guard('web')->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                return to_route('login')->with('error_message', "ce compte est désactivé");
+                return to_route('')->with('error_message', "ce compte est désactivé");
             }
         }
         return $next($request);
