@@ -189,7 +189,7 @@ class EquipeDeGestionController extends Controller
         $axes = AxesProjet::where('projet_id', $projet->id)->get();
 
         $comite = ComiteAvec::where('avec_id', $avec_id)->get();
-        $membres = Membre::with(["fonction"])->where('avec_id', $avec_id)->get();
+        $membres = Membre::with(["fonction", "transactions"])->where('avec_id', $avec_id)->get();
         $regles_de_taxation_des_interets = ReglesDeTaxationDesInterets::where('avec_id', $avec_id)->get();
         $regles_de_taxation_des_amandes = ReglesDeTaxationDesAmandes::where('avec_id', $avec_id)->get();
         $cas_octroi_soutien = CasOctroiSoutien::where('avec_id', $avec_id)->get();
@@ -747,6 +747,7 @@ class EquipeDeGestionController extends Controller
                     "amande" => $request->get('amande', 0),
                     "credit" => $request->get('credit', 0),
                     "credit_rembourse" => $request->get('remboursement', 0),
+                    "statut_du_membre" => "actif",
                 ]);
             }
             return redirect()->back()->with("success", "la transaction a été enregistré");

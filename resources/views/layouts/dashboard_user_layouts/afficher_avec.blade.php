@@ -599,9 +599,11 @@
                                         @if($projet->statut === "en cours")
                                             @if($current_user->autorisations)
                                                 @if(in_array("peux supprimer un membre", json_decode($current_user->autorisations, true)) && \Carbon\Carbon::parse($membre->created_at)->diffInDays() <= 7)
-                                                    <button class="btn btn-sm text-danger" value="{{ $membre->id }}" onclick="loadidmembre(this)" data-bs-toggle="modal" data-bs-target="#deleteRowmembre">
-                                                        <span class="bi-trash"></span>
-                                                    </button>
+                                                    @if($membre->transactions->count() == 0)
+                                                        <button class="btn btn-sm text-danger" value="{{ $membre->id }}" onclick="loadidmembre(this)" data-bs-toggle="modal" data-bs-target="#deleteRowmembre">
+                                                            <span class="bi-trash"></span>
+                                                        </button>
+                                                    @endif
                                                 @endif
                                             @endif
                                         @endif
