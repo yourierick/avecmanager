@@ -38,7 +38,7 @@
             <div class="mb-3">
                 <div class="form-group form-group-default">
                     <label for="id_montant">montant à donner</label>
-                    <input id="id_montant" name="montant" class="form-control" type="number" step="any" min="0" max="{{ $montanttotal }}" onchange="checkmaxandmin(this)" placeholder="montant à donner">
+                    <input id="id_montant" name="montant" class="form-control" type="number" step="any" min="0" max="{{ $montanttotal }}" placeholder="montant à donner">
                 </div>
                 <x-input-error :messages="$errors->get('montant')" class="mt-2 text-danger"/>
             </div>
@@ -83,5 +83,4 @@
             });
         @endif
     </script>
-    <script src="{{ asset("js/personnal_scripts/mouvement_caisse_solidarite.js") }}"></script>
 @endsection

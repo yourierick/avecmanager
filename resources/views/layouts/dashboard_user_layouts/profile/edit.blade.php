@@ -1,5 +1,7 @@
 @extends('base_utilisateur')
-@section('big_title', 'INFORMATION DE PROFILE')
+@section('big_title')
+    <span class="bi-person-badge-fill" style="color: peru">INFORMATION DE PROFILE</span>
+@endsection
 @section('small_description', "mettre à jour vos informations de profile")
 @section('style')
     <style>

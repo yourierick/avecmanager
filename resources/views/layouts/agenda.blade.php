@@ -39,7 +39,7 @@
     </div>
     <div class="row mb-4">
         <div class="col-md-8">
-            <span class="bi-list" style="color: peru">PROJET REFERENCE: {{ $projet ? $projet->code_reference:"AUCUN" }}</span>
+            <span class="bi-file-word-fill" style="color: peru">PROJET REFERENCE: {{ $projet ? $projet->code_reference:"AUCUN" }}</span>
         </div>
         <div class="col-md-4">
             <div class="btn-group dropdown" style="float: right;">
@@ -117,7 +117,6 @@
         </div>
     </div>
 @endsection
-@section('small_description', 'agenda')
 @section('content')
     <div class="row">
         <div class="col-md-12">

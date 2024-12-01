@@ -22,11 +22,12 @@ class ProfileController extends Controller
     {
         $projets = ProjetAvec::all();
         $projet_count = $projets->count();
+
         if ($request->user()->droits === "administrateur") {
             return view('profile.edit', [
                 'user' => $request->user(), 'current_user'=>$request->user(), "projet_count"=>$projet_count,
             ]);
-        }elseif ($request->user()->droits === "administrateur") {
+        }elseif ($request->user()->droits === "utilisateur") {
             return view('layouts.dashboard_user_layouts.profile.edit', [
                 'user' => $request->user(), 'current_user'=>$request->user(), "projet_count"=>$projet_count,
             ]);

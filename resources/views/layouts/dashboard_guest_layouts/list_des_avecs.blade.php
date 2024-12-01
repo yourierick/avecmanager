@@ -1,6 +1,6 @@
 @extends('base_guest')
 @section('big_title')
-    <span class="bi-list" style="color: peru"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
+    <span class="bi-file-word-fill" style="color: peru"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
 @endsection
 @section('content')
     <div class="row">

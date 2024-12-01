@@ -380,7 +380,7 @@
                                 <div class="numbers">
                                     <p class="card-category">Equipe</p>
                                     <h4 class="card-title">{{ $equipedegestion->count() }}</h4>
-                                    <a href="{{ route('gestionprojet.list_du_personnel_projet', $projet->id) }}" class="small-box-footer">voir plus <i class="fa fa-arrow-circle-right"></i></a>
+                                    <a href="{{ route('gestionprojet.lists_personnel', $projet->id) }}" class="small-box-footer">voir plus <i class="fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -461,7 +461,7 @@
                                 <div class="numbers">
                                     <p class="card-category">Animateurs</p>
                                     <h4 class="card-title">{{ $equipedegestion->count() }}</h4>
-                                    <a href="{{ route('gestionprojet.list_du_personnel_projet', $projet->id) }}" class="small-box-footer">voir plus <i class="fa fa-arrow-circle-right"></i></a>
+                                    <a href="{{ route('gestionprojet.lists_personnel', $projet->id) }}" class="small-box-footer">voir plus <i class="fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>
                         </div>

@@ -17,12 +17,12 @@ class CheckAccountType
     public function handle(Request $request, Closure $next,string $type_account): Response
     {
         if (!Auth::check()) {
-            return redirect("login");
+            return redirect("");
         }
 
         $user = Auth::user();
         if ($user->droits != $type_account) {
-            abort(403, "Unreachable");
+            abort(403, "Accès réfusé");
         }
         return $next($request);
     }

@@ -2,7 +2,6 @@
 @section('big_title')
     <span style="color: peru" class="bi-file-word-fill"> PROJET: {{ $projet->code_reference }}</span>
 @endsection
-@section('small_description', "vue du projet")
 @section('style')
     <style>
         .list-timeline {

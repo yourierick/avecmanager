@@ -68,9 +68,16 @@ class ReportsAdminController extends Controller
         $credit = $membre->credit + $membre->interets_sur_credit;
         $projet_count = ProjetAvec::all()->count();
 
+        $breadcrumbs = [
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('afficher_membre', $membre->id), 'label'=>'Afficher un membre'],
+            ['url'=>url('rapport_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport des transactions du membre'],
+        ];
+
         return view('layouts.dashboard_admin_layouts.reports.rapport_transactions_membre', ['current_user' => $request->user(),
             'transactions' => $transactions, "projet"=>$projet, "avec"=>$avec, "membre"=>$membre, "parts"=>$parts, "credit"=>$credit,
-            "projet_count"=>$projet_count]);
+            "projet_count"=>$projet_count, "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function rapport_analytique_du_membre($membre_id, $projet_id, $avec_id, Request $request) {
@@ -117,9 +124,16 @@ class ReportsAdminController extends Controller
         $current_user = $request->user();
         $projet_count = ProjetAvec::all()->count();
 
+        $breadcrumbs = [
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('afficher_membre', $membre->id), 'label'=>'Afficher un membre'],
+            ['url'=>url('rapport_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport des transactions du membre'],
+            ['url'=>url('rapport_analytique_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport analytique des transactions du membre'],
+        ];
+
         return view('layouts.dashboard_admin_layouts.reports.rapport_analytique_membre', compact('labels',
             'values', 'valuesinterets', 'projet', 'avec', 'membre', 'current_user', 'totalAmount', 'averageAmount', 'maxAmount',
-            'trend', 'trendProjection', 'slope', 'intercept', 'projet_count', 'trendPercentage', 'totalAmountInterets'));
+            'trend', 'trendProjection', 'slope', 'intercept', 'projet_count', 'breadcrumbs', 'trendPercentage', 'totalAmountInterets'));
     }
 
     public function rapport_analytique_de_avec($avec_id, $projet_id, Request $request) {
@@ -165,9 +179,15 @@ class ReportsAdminController extends Controller
         $current_user = $request->user();
         $projet_count = ProjetAvec::all()->count();
 
+        $breadcrumbs = [
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('rapport_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport des transactions de l'avec"],
+            ['url'=>url('rapport_analytique_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport analytique des transactions de l'avec"],
+        ];
+
         return view('layouts.dashboard_admin_layouts.reports.rapport_analytique_avec', compact('labels',
             'values', 'valuesinterets', 'projet', 'avec', 'current_user', 'totalAmount', 'averageAmount', 'maxAmount',
-            'trend', 'trendProjection', 'slope', 'intercept', 'projet_count', 'trendPercentage', 'totalAmountInterets'));
+            'trend', 'trendProjection', 'slope', "breadcrumbs", 'intercept', 'projet_count', 'trendPercentage', 'totalAmountInterets'));
     }
 
     public function rapport_transactions_de_avec($avec_id, $projet_id, Request $request) {
@@ -208,10 +228,17 @@ class ReportsAdminController extends Controller
         }
         $projet_count = ProjetAvec::all()->count();
 
+        $breadcrumbs = [
+            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('rapport_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport des transactions de l'avec"],
+        ];
+
         return view('layouts.dashboard_admin_layouts.reports.rapport_transactions_avec', compact("projet",
             "transactions", "avec", "cycle_de_gestion", "current_user", "totalMembres",
             "partsTotAchetees", "montantinteret", "montantamande", "montantsolidarite", "montantencaisse",
-            "hommes", "femmes", "actifs", "inactifs", "abandons", "projet_count"));
+            "hommes", "femmes", "actifs", "inactifs", "abandons", "breadcrumbs", "projet_count"));
     }
 
     public function situation_generale_de_avec($avec_id, $projet_id, Request $request) {
@@ -257,10 +284,17 @@ class ReportsAdminController extends Controller
         }
         $projet_count = ProjetAvec::all()->count();
 
+        $breadcrumbs = [
+            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('situation_generale_de_avec', [$avec->id, $projet->id]), 'label'=>"Situation générale de l'avec"],
+        ];
+
         return view('layouts.dashboard_admin_layouts.reports.situation_generale_avec', compact("projet", "avec",
             "actifs", "inactifs", "abandons", "current_user", "hommes", "femmes", "totalMembres", "caisse_amande", "caisse_epargne",
             "caisse_solidarite", "montant_interet", "montantTotalEpargne", "montantTotalcredit", "interetTotalcredit",
-            "interets_sur_credit_des_membres", "parts_ht_des_membres", "credit_des_membres", "projet_count"));
+            "interets_sur_credit_des_membres", "breadcrumbs", "parts_ht_des_membres", "credit_des_membres", "projet_count"));
     }
 
     public function releve_des_transactions_caisse_solidarite($avec_id, $projet_id, Request $request):View
@@ -295,9 +329,16 @@ class ReportsAdminController extends Controller
         }
         $projet_count = ProjetAvec::all()->count();
 
+        $breadcrumbs = [
+            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('releve_des_transactions_caisse_solidarite', [$avec->id, $projet->id]), 'label'=>"Rélevé des transactions de la caisse solidarité"],
+        ];
+
         return view('layouts.dashboard_admin_layouts.reports.releve_transactions_de_soutien', compact("projet",
             "transactions", "avec", "current_user", "totalMembres",
             "partsTotAchetees", "montantinteret", "montantamande", "montantsolidarite", "montantencaisse",
-            "hommes", "femmes", "actifs", "inactifs", "abandons", 'transactionsCount', "projet_count"));
+            "hommes", "femmes", "actifs", "inactifs", "breadcrumbs", "abandons", 'transactionsCount', "projet_count"));
     }
 }

@@ -2,8 +2,8 @@
 @section('big_title')
     <div class="row mb-4">
         <div class="col-md-8">
-            <span class="text-muted bi-file-word-fill"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
-            <br><span style="color: #ee6900; text-transform: uppercase; font-weight: 500">AVEC: {{ $avec->designation }}</span>
+            <span class="bi-file-word-fill" style="color: peru"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
+            <br><span style="text-transform: uppercase; font-weight: 500">AVEC: {{ $avec->designation }}</span>
         </div>
         @if($projet->statut === "en cours")
             @if($avec->membres->count() >= 15 && $avec->membres->count() <= 30 || $transactionsCount != 0)
@@ -16,7 +16,7 @@
                                 </button>
                                 <ul class="dropdown-menu p-2" role="menu" style="background-color: #ffffff; border: 1px solid blue">
                                     <li>
-                                        <a class="dropdown-item btn btn-outline-secondary perso" href="{{ route("gestionprojet.assister_un_membre", [$avec->id, $projet->id]) }}"><span class="bi-plus-circle-fill text-warning"> assister un membre</span></a>
+                                        <a class="dropdown-item btn btn-outline-secondary perso" href="{{ route("gestionprojet.assister_un_membre", [$avec->id, $projet->id]) }}"><span class="bi-plus-circle-fill text-dark"> assister un membre</span></a>
                                     </li>
                                 </ul>
                             </div>
@@ -42,6 +42,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
+                <div class="dropdown-divider"></div>
                 <div class="modal-body">
                     <p class="small">
                         voulez-vous vraiment supprimer cette transaction ?
@@ -106,7 +107,7 @@
                                     @if($current_user->fonction === "superviseur")
                                         <td>
                                             @if(\Carbon\Carbon::parse($transaction->created_at)->diffInDays() < 1)
-                                                <button class="btn-sm text-danger" data-bs-toggle="modal" data-bs-target="#ModalSup" value="{{ $transaction->id }}" onclick="loadidtransaction(this)"><span class="bi-trash-fill"></span></button>
+                                                <button class="btn text-danger" data-bs-toggle="modal" data-bs-target="#ModalSup" value="{{ $transaction->id }}" onclick="loadidtransaction(this)"><span class="bi-trash-fill"></span></button>
                                             @endif
                                         </td>
                                     @endif

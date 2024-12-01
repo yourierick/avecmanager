@@ -1,6 +1,7 @@
 @extends('base')
-@section('big_title', 'AJOUTER UN PROJET')
-@section('small_description', 'ajouter un nouveau projet')
+@section('big_title')
+    <span style="color: peru" class="bi-plus-circle-fill"> AJOUTER UN PROJET</span>
+@endsection
 @section('content')
     <div>
         <form method="post" class="shadow p-3" action="{{ route('projet.enregistrer') }}">

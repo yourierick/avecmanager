@@ -19,7 +19,7 @@ class SessionTimeout
                 Auth::logout();
                 session()->flush();
 
-                return redirect('/login')->withErrors(["error_message"=>'session expirée.']);
+                return redirect('')->withErrors(["error_message"=>'session expirée.']);
             }
             session(['last_activity_time' => time()]);
         }

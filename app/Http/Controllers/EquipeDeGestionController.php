@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Agenda;
 use App\Models\Avec;
 use App\Models\AxesProjet;
 use App\Models\CaisseAmande;
@@ -39,8 +38,14 @@ class EquipeDeGestionController extends Controller
             $personnel = User::where('projet_id', $projet_id)->where('fonction', 'animateur')->where("superviseur_id", $request->user()->id)->get();
         }
         $projet = ProjetAvec::find($projet_id);
+
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('lists_personnel', $projet_id), 'label'=>'Liste du personnel'],
+        ];
+
         return view('layouts.dashboard_user_layouts.list_personnel_assigne', ['current_user' => $request->user(),
-            'personnel' => $personnel, 'projet' => $projet,]);
+            'personnel' => $personnel, 'projet' => $projet, 'breadcrumbs'=>$breadcrumbs]);
     }
 
     public function list_avecs($projet_id, Request $request): View
@@ -52,15 +57,28 @@ class EquipeDeGestionController extends Controller
         } else {
             $avecs = Avec::with(["animateur", "superviseur", "membres", "axe"])->where('projet_id', $projet_id)->where('animateur_id', $request->user()->id)->get();
         }
+
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet_id), 'label'=>'Liste des avecs'],
+        ];
+
         $projet = ProjetAvec::find($projet_id);
-        return view('layouts.dashboard_user_layouts.list_des_avecs', ['current_user' => $request->user(), 'projet' => $projet, "avecs" => $avecs]);
+        return view('layouts.dashboard_user_layouts.list_des_avecs', ['current_user' => $request->user(),
+            'projet' => $projet, "avecs" => $avecs, "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function ajouter_un_animateur($projet_id, Request $request): View
     {
         $projet = ProjetAvec::find($projet_id);
         $superviseurs = User::where('projet_id', $projet_id)->where("fonction", "superviseur")->get();
-        return view('layouts.dashboard_user_layouts.ajouter_un_animateur', ['current_user' => $request->user(), 'projet' => $projet, "superviseurs" => $superviseurs]);
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_personnel_projet', $projet_id), 'label'=>'Liste du personnel'],
+            ['url'=>url('ajouter_un_animateur', $projet_id), 'label'=>'Ajouter un animateur'],
+        ];
+        return view('layouts.dashboard_user_layouts.ajouter_un_animateur', ['current_user' => $request->user(),
+            'projet' => $projet, "superviseurs" => $superviseurs, "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function save_animateur($projet_id, Request $request)
@@ -111,8 +129,15 @@ class EquipeDeGestionController extends Controller
             $animateurs = $current_user;
         }
         $axes = AxesProjet::where('projet_id', $projet_id)->get();
+
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet_id), 'label'=>'Liste des avecs'],
+            ['url'=>url('ajouter_une_avec', $projet_id), 'label'=>'Ajouter une avec'],
+        ];
+
         return view('layouts.dashboard_user_layouts.ajouter_une_avec', compact("projet",
-        "current_user", "animateurs", "axes"));
+        "current_user", "animateurs", "axes", "breadcrumbs"));
     }
 
     public function save_avec($projet_id, Request $request)
@@ -147,6 +172,15 @@ class EquipeDeGestionController extends Controller
         ]);
 
         $caisse_epargne = CaisseEpargne::create([
+            "projet_id" => $projet->id,
+            "avec_id" => $avec->id,
+        ]);
+
+        $caisse_solidarite = CaisseSolidarite::create([
+            "projet_id" => $projet->id,
+            "avec_id" => $avec->id,
+        ]);
+        $caisse_amande = CaisseAmande::create([
             "projet_id" => $projet->id,
             "avec_id" => $avec->id,
         ]);
@@ -194,20 +228,34 @@ class EquipeDeGestionController extends Controller
         $regles_de_taxation_des_amandes = ReglesDeTaxationDesAmandes::where('avec_id', $avec_id)->get();
         $cas_octroi_soutien = CasOctroiSoutien::where('avec_id', $avec_id)->get();
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec_id), 'label'=>"Vue globale de l'avec"],
+        ];
 
         return view('layouts.dashboard_user_layouts.afficher_avec',
             ['current_user' => $request->user(), 'avec' => $avec, 'projet' => $projet, 'comite' => $comite,
                 'regles_de_taxation_des_interets' => $regles_de_taxation_des_interets,
                 'regles_de_taxation_des_amandes' => $regles_de_taxation_des_amandes, 'membres' => $membres,
-                "cas_octroi_soutien"=>$cas_octroi_soutien, "animateurs"=>$animateurs, "axes"=>$axes]);
+                "cas_octroi_soutien"=>$cas_octroi_soutien, "animateurs"=>$animateurs, "axes"=>$axes,
+                "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function ajouter_un_membre($avec_id, Request $request): View
     {
         $avec = Avec::with(["animateur", "superviseur"])->find($avec_id);
         $projet = ProjetAvec::find($avec->projet_id);
+
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec_id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('ajouter_un_membre', $avec_id), 'label'=>"Ajouter un membre dans l'avec"],
+        ];
+
         return view('layouts.dashboard_user_layouts.ajouter_un_membre', ['current_user' => $request->user(),
-            "avec" => $avec, "projet" => $projet]);
+            "avec" => $avec, "projet"=>$projet, "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function save_membre($avec_id, Request $request): RedirectResponse
@@ -363,11 +411,17 @@ class EquipeDeGestionController extends Controller
             }
         }
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Afficher un membre"],
+        ];
 
         return view('layouts.dashboard_user_layouts.membres.afficher_membre',
             ['current_user' => $request->user(), 'avec' => $avec, 'projet' => $projet, 'membre' => $membre,
                 "interets"=>$avec->interets, "caisse_amande"=>$caisse_amande, "membre_fonction"=>$fonction,
-            "transactionsCount"=>$transactionsCount])->with("alert_remboursement", $alert_remboursement);
+            "transactionsCount"=>$transactionsCount, "breadcrumbs"=>$breadcrumbs])->with("alert_remboursement", $alert_remboursement);
     }
 
     public function editer_un_membre($membre_id, Request $request): RedirectResponse
@@ -417,8 +471,16 @@ class EquipeDeGestionController extends Controller
         $current_user = $request->user();
         $cycle_de_gestion = CycleDeGestion::where("projet_id", $projet->id)->get();
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Afficher un membre"],
+            ['url'=>url('gestion_cas_abandon_membre', [$membre_id, $avec->id]), 'label'=>"Gestion d'un cas d'abandon"],
+        ];
+
         return view("layouts.dashboard_user_layouts.membres.gestion_cas_abandon_membre", compact("avec",
-        "membre", "current_user", 'projet', "cycle_de_gestion"));
+        "membre", "current_user", 'projet', "cycle_de_gestion", "breadcrumbs"));
     }
 
 
@@ -539,8 +601,16 @@ class EquipeDeGestionController extends Controller
         $regles_amande = ReglesDeTaxationDesAmandes::where("avec_id", $avec->id)->get();
         $current_user = $request->user();
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Afficher un membre"],
+            ['url'=>url('transactions_hebdomadaire', $membre_id), 'label'=>"Nouvelle transaction hebdomadaire"],
+        ];
+
         return view('layouts.dashboard_user_layouts.membres.transactions', compact("membre", "avec",
-        "projet", "cycle_de_gestion", "regles_amande", "current_user"));
+        "projet", "cycle_de_gestion", "regles_amande", "current_user", "breadcrumbs"));
     }
 
 
@@ -562,17 +632,23 @@ class EquipeDeGestionController extends Controller
         $projet = ProjetAvec::find($avec->projet_id);
         $caisse_epargne = CaisseEpargne::where('avec_id', $avec->id)->first();
 
-        if ($request->has("credit")) {
-            $request->validate([
-                "credit"=>['lte:'. $caisse_epargne->montant]
-            ]);
-        }
-
         if ($request->get("frequentation") === "présent(e)") {
             $request->validate([
                 "parts_achetees" => ["required"],
                 "cotisation" => ["required"],
             ]);
+
+            if ($request->has("credit")) {
+                $request->validate([
+                    "credit"=>['lte:'. $caisse_epargne->montant]
+                ]);
+            }
+
+            if ($request->has("remboursement")) {
+                $request->validate([
+                    "remboursement"=>['lte:'. $membre->credit + $membre->interets_sur_credit]
+                ]);
+            }
 
             $scan = Transactions::where('projet_id', $projet->id)->where('avec_id', $avec->id)->where('membre_id', $membre_id)->where('mois_id', $request->get("mois_id"))->where('semaine', $request->get('semaine'))->first();
             if (is_null($scan)) {
@@ -866,8 +942,16 @@ class EquipeDeGestionController extends Controller
         $caissesolidarite = CaisseSolidarite::where("avec_id", $avec_id)->first();
         $montanttotal = $caissesolidarite ? $caissesolidarite->montant : 0;
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('releve_transactions_caisse_solidarite', [$avec_id, $projet_id]), 'label'=>"Rélevé des transactions caisse solidarité"],
+            ['url'=>url('assister_un_membre', [$avec_id, $projet_id]), 'label'=>"Assister un membre"],
+        ];
+
         return view('layouts.dashboard_user_layouts.donner_une_assistance', compact("avec", "projet",
-            "membres", "current_user", "cas", "montanttotal"));
+            "membres", "current_user", "cas", "montanttotal", "breadcrumbs"));
     }
 
     public function save_transaction_assistance($avec_id, $projet_id, Request $request):RedirectResponse
@@ -895,7 +979,7 @@ class EquipeDeGestionController extends Controller
         $caissesolidarite->montant -= $request->get("montant");
         $caissesolidarite->save();
 
-        return redirect()->route("rapports.releve_transactions_caisse_solidarite", [$avec_id, $projet_id])->with("success", "la transaction a été faite");
+        return redirect()->back()->with("success", "la transaction a été effectué");
     }
 
     public function supprimer_transaction_caisse_solidarite($avec_id, Request $request):RedirectResponse

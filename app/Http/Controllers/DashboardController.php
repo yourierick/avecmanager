@@ -9,7 +9,6 @@ use App\Models\CaisseAmande;
 use App\Models\CasOctroiSoutien;
 use App\Models\ComiteAvec;
 use App\Models\CycleDeGestion;
-use App\Models\EquipeDeGestion;
 use App\Models\Membre;
 use App\Models\ProjetAvec;
 use App\Models\ReglesDeTaxationDesAmandes;
@@ -22,7 +21,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -37,7 +35,14 @@ class DashboardController extends Controller
         $users = User::with(["projet"])->get();
         $projets = ProjetAvec::all();
         $projet_count = $projets->count();
-        return view('layouts.dashboard_admin_layouts.user_manager.list_users', ['users' => $users, 'current_user'=>$current_user, 'projet_count'=>$projet_count]);
+
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+            ['url'=>url('manage_user'), 'label'=>'Liste des utilisateurs'],
+        ];
+
+        return view('layouts.dashboard_admin_layouts.user_manager.list_users', ['users' => $users,
+            'current_user'=>$current_user, 'projet_count'=>$projet_count, "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function admin_dashboard(Request $request):View
@@ -56,8 +61,12 @@ class DashboardController extends Controller
         $taches2 = Agenda::where("user_id", $request->user()->id)->whereDate("date", $date2)->orderBy("heure_debut", "asc")->get();
         $taches3 = Agenda::where("user_id", $request->user()->id)->whereDate("date", $date3)->orderBy("heure_debut", "asc")->get();
 
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+        ];
+
         return view('layouts.dashboard', compact("utilisateurs", "administrateurs", "visiteurs",
-        "projet_count", "projets", "current_user", "date", "date2", "date3", "taches", "taches2",
+        "projet_count", "projets", "current_user", "breadcrumbs", "date", "date2", "date3", "taches", "taches2",
         "taches3"));
     }
 
@@ -79,6 +88,9 @@ class DashboardController extends Controller
 
         $months = CycleDeGestion::where("projet_id", $projet_id)->pluck('designation', 'id');
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil']
+        ];
         if ($request->user()->fonction === "coordinateur du projet" || ($request->user()->fonction === "chef de projet") || ($request->user()->fonction === "assistant suivi et évaluation")) {
             $equipedegestion = User::where('projet_id', $projet->id)->get();
             $avecs = Avec::where("projet_id", $projet->id)->get();
@@ -208,7 +220,7 @@ class DashboardController extends Controller
 
         return view('layouts.dashboard_utilisateur', compact("projet", "equipedegestion", "cycledegestion",
         "axes", "avecs", "taches", "taches2", "taches3", "date", "date2", "date3", "current_user", "values", "valuesinterets", "labels",
-        "total_interet", "total_abandons", "total_investissement", "hommes", "femmes"));
+        "total_interet", "total_abandons", "total_investissement", "hommes", "femmes", "breadcrumbs"));
     }
 
     public function guest_dashboard(Request $request):View
@@ -260,9 +272,13 @@ class DashboardController extends Controller
 
         $projet = ProjetAvec::find($request->user()->projet_id);
 
+        $breadcrumbs = [
+            ['url'=>url('guest_dashboard'), 'label'=>'Accueil'],
+        ];
+
         return view('layouts.dashboard_guest', compact("date", "date2", "date3", "values", "valuesinterets",
         "taches", "taches2", "taches3", "projet", "current_user", "labels", "monthlygeneratedinterest", "monthlysavings",
-        "total_interet", "total_investissement", "total_abandons", "hommes", "femmes"));
+        "total_interet", "total_investissement", "breadcrumbs", "total_abandons", "hommes", "femmes"));
     }
 
     public function list_projets(Request $request):View
@@ -270,14 +286,28 @@ class DashboardController extends Controller
         $projets = ProjetAvec::all();
         $projet_count = $projets->count();
         $projets = ProjetAvec::all();
-        return view('layouts.dashboard_admin_layouts.list_projets', ['current_user'=>$request->user(), 'projets'=>$projets, 'projet_count'=>$projet_count]);
+
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
+        ];
+
+        return view('layouts.dashboard_admin_layouts.list_projets', ['current_user'=>$request->user(),
+            'projets'=>$projets, 'projet_count'=>$projet_count, "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function ajouter_un_projet(Request $request):View
     {
         $projets = ProjetAvec::all();
         $projet_count = $projets->count();
-        return view('layouts.dashboard_admin_layouts.ajouter_un_projet', ['current_user'=>$request->user(), 'projet_count'=>$projet_count]);
+
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+            ['url'=>url('ajouter_un_projet'), 'label'=>'Ajouter un nouveau projet'],
+        ];
+
+        return view('layouts.dashboard_admin_layouts.ajouter_un_projet', ['current_user'=>$request->user(),
+            'projet_count'=>$projet_count, "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function enregistrer_projet(AddProjetRequest $request)
@@ -308,11 +338,17 @@ class DashboardController extends Controller
         $projet_count = $projets->count();
         $axes = AxesProjet::where('projet_id', $projet->id)->get();
         $superviseurs = User::where('projet_id', $projet->id)->where('fonction', 'superviseur')->get();
+
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
+            ['url'=>url('configuration_projet', $projet_id), 'label'=>'Configuration du projet'],
+        ];
+
         return view('layouts.dashboard_admin_layouts.configuration_projet', ['current_user' => $request->user(),
             'projet' => $projet, 'cycle_de_gestion' => $cycle_de_gestion, "axes" => $axes, "projet_count" => $projet_count,
-            "superviseurs" => $superviseurs]);
+            "superviseurs" => $superviseurs, "breadcrumbs"=>$breadcrumbs]);
     }
-
 
     public function configuration_mois_cycle_de_gestion(Request $request)
     {
@@ -372,6 +408,12 @@ class DashboardController extends Controller
         $projet_count = $projets->count();
         $current_user = $request->user();
 
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
+            ['url'=>url('afficher_projet', $projet_id), 'label'=>'Afficher un projet'],
+        ];
+
         $total_abandons = Membre::whereHas('avec', function($query) use ($projet_id) {
             $query->where('projet_id', $projet_id)->where("statut", "abandon");
         })->get()->count();
@@ -411,7 +453,7 @@ class DashboardController extends Controller
         return view('layouts.dashboard_admin_layouts.afficher_projet', compact("projet",
         "equipedegestion", "cycledegestion", "axes", "avecs", "projet_count", "current_user",
         "total_abandons", "projets", "total_abandons", "total_investissement", "total_interet", "hommes",
-        "femmes", "labels", "values", "valuesinterets"));
+        "femmes", "labels", "values", "valuesinterets", "breadcrumbs"));
     }
 
     public function traitement_projet($projet_id, Request $request)
@@ -454,8 +496,16 @@ class DashboardController extends Controller
         $projet = ProjetAvec::find($projet_id);
         $current_user = $request->user();
         $projet_count = ProjetAvec::all()->count();
+
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
+            ['url'=>url('afficher_projet', $projet_id), 'label'=>'Afficher un projet'],
+            ['url'=>url('list_des_avecs', $projet_id), 'label'=>'Liste des avecs'],
+        ];
+
         return view('layouts.dashboard_admin_layouts.list_des_avecs',
-        compact("avecs", "projet", "projet_count", "current_user"));
+        compact("avecs", "projet", "projet_count", "current_user", "breadcrumbs"));
     }
 
     public function supprimer_avec(Request $request):RedirectResponse
@@ -483,9 +533,17 @@ class DashboardController extends Controller
         $current_user = $request->user();
         $projet_count = ProjetAvec::all()->count();
 
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
+            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+        ];
+
         return view("layouts.dashboard_admin_layouts.afficher_avec", compact("avec",
         "projet", "animateurs", "axes", "comite", "membres", "regles_de_taxation_des_interets",
-        "regles_de_taxation_des_amandes", "cas_octroi_soutien", "current_user", "projet_count"));
+        "regles_de_taxation_des_amandes", "cas_octroi_soutien", "current_user", "breadcrumbs", "projet_count"));
     }
 
     public function supprimer_un_membre(Request $request): RedirectResponse
@@ -528,9 +586,17 @@ class DashboardController extends Controller
             }
         }
 
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
+            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
+            ['url'=>url('list_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_une_avec', $avec->id), 'label'=>'Afficher une avec'],
+        ];
+
         return view('layouts.dashboard_admin_layouts.afficher_un_membre', compact("membre",
         "avec", "projet", "fonction", "interets", "membre_fonction", "caisse_amande", "transactionsCount",
-        "current_user", "projet_count"))->with("alert_remboursement", $alert_remboursement);;
+        "current_user", "projet_count", "breadcrumbs"))->with("alert_remboursement", $alert_remboursement);
     }
 
     public function list_du_personnel_projet($projet_id, Request $request):View
@@ -538,8 +604,16 @@ class DashboardController extends Controller
         $projet_count = $projets->count();
         $personnel = User::where('projet_id', $projet_id)->get();
         $projet = ProjetAvec::find($projet_id);
+
+        $breadcrumbs = [
+            ['url'=>url('dashboard_admin'), 'label'=>'Accueil'],
+            ['url'=>url('list_projet'), 'label'=>'Liste des projets'],
+            ['url'=>url('afficher_projet', $projet->id), 'label'=>'Afficher un projet'],
+            ['url'=>url('list_du_personnel_projet', $projet->id), 'label'=>'Liste du personnel projet'],
+        ];
+
         return view('layouts.dashboard_admin_layouts.list_personnel_assigne', ['current_user'=>$request->user(),
-            'personnel'=>$personnel, 'projet'=>$projet, 'projet_count'=>$projet_count]);
+            'personnel'=>$personnel, 'projet'=>$projet, 'projet_count'=>$projet_count, "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function ajouter_axe($projet_id, Request $request)
@@ -551,13 +625,13 @@ class DashboardController extends Controller
         return response()->json(["success"=>"ajouté"]);
     }
 
-
     #Edition du profile d'un utilisateur
     public function edit_profile_user($user_id, Request $request)
     {
         $user = User::find($user_id);
         $projets = ProjetAvec::all();
         $projet_count = $projets->count();
+
         return view("layouts.dashboard_admin_layouts.profile_user.edit_profile_user", ['current_user'=>$request->user(), 'user'=>$user, 'projets'=>$projets, "projet_count"=>$projet_count]);
     }
 
@@ -566,7 +640,6 @@ class DashboardController extends Controller
         $superviseurs = User::where('projet_id', $projet_id)->where("fonction", "superviseur")->get();
         return response()->json(["superviseurs"=>$superviseurs]);
     }
-
 
     /* module de mise à jour des informations d'un utilisateur */
     public function update_profile_user($user_id, Request $request)
@@ -795,7 +868,6 @@ class DashboardController extends Controller
         }
     }
 
-
     public function update_user_password($user_id, Request $request): RedirectResponse
     {
         $user = User::find($user_id);
@@ -842,12 +914,17 @@ class DashboardController extends Controller
         $projet = ProjetAvec::find($current_user->projet_id);
         $projet_count = ProjetAvec::all()->count();
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('agenda'), 'label'=>'Agenda'],
+        ];
+
         if ($current_user->droits === "administrateur") {
-            return view("layouts.agendaadmin", compact("current_user", "agenda", "projet", "projet_count"));
+            return view("layouts.agendaadmin", compact("current_user", "breadcrumbs", "agenda", "projet", "projet_count"));
         }elseif ($current_user->droits === "utilisateur") {
-            return view("layouts.agenda", compact("current_user", "agenda", "projet"));
+            return view("layouts.agenda", compact("current_user", "breadcrumbs", "agenda", "projet"));
         }else {
-            return view("layouts.agendaguest", compact("current_user", "agenda", "projet"));
+            return view("layouts.agendaguest", compact("current_user", "breadcrumbs", "agenda", "projet"));
         }
     }
 

@@ -1,11 +1,10 @@
 @extends('base')
 @section('big_title')
-    <span style="color: peru">PROJET REFERENCE: {{ $projet->code_reference }}</span>
+    <span style="color: peru" class="bi-file-word-fill"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
 @endsection
-@section('small_description', 'Personnel assigné au projet')
 @section('page_courant', 'liste du personnel')
 @section('content')
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">

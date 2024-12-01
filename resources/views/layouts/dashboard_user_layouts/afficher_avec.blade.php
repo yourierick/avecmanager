@@ -628,8 +628,8 @@
                         <table id="multi-filter-select-regles_amandes" class="display table-sm w-100 table-striped table-hover">
                             <thead>
                             <tr>
-                                <th style="background-color: #c5c5c5">Enoncé de la règle</th>
-                                <th style="background-color: #c5c5c5">Amande</th>
+                                <th style="background-color: #bac8ff">Enoncé de la règle</th>
+                                <th style="background-color: #bac8ff">Amande</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -673,10 +673,10 @@
                         <table id="multi-filter-select-regles_interets" class="display table-sm w-100 table-striped table-hover">
                             <thead>
                             <tr>
-                                <th style="background-color: #c5c5c5">Enoncé de la règle</th>
-                                <th style="background-color: #c5c5c5">montant minimum</th>
-                                <th style="background-color: #c5c5c5">montant maximum</th>
-                                <th style="background-color: #c5c5c5">taux d'intérêt</th>
+                                <th style="background-color: #bac8ff">Enoncé de la règle</th>
+                                <th style="background-color: #bac8ff">montant minimum</th>
+                                <th style="background-color: #bac8ff">montant maximum</th>
+                                <th style="background-color: #bac8ff">taux d'intérêt</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -724,7 +724,7 @@
                         <table id="multi-filter-select-cas" class="display table-sm w-100 table-striped table-hover">
                             <thead>
                             <tr>
-                                <th style="background-color: #c5c5c5">cas</th>
+                                <th style="background-color: #bac8ff">cas</th>
                                 <th></th>
                             </tr>
                             </thead>

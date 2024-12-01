@@ -35,7 +35,6 @@
                             @endif
                         @endif
                         <a class="dropdown-item btn btn-outline-secondary perso" href="{{ route("rapports.rapport_transactions_membre", [$membre->id, $projet->id, $avec->id]) }}"><span class="bi-file-earmark-excel"> rélevé des transactions</span></a>
-                        <a class="dropdown-item btn btn-outline-secondary perso" href="{{ route("gestionprojet.afficher_avec", $avec->id) }}"><span class="bi-eye-fill"> vue globale de l'avec</span></a>
                     </li>
                 </ul>
             </div>

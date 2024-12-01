@@ -270,7 +270,7 @@
                                     $max_remboursement = $membre->credit + $membre->interets_sur_credit;
                                 @endphp
                                 <span class="input-group-text">FC</span>
-                                <input type="number" value="{{ old("remboursement", 0) }}" onchange="checkmaxandmin(this)" min="0" max="{{ $max_remboursement }}" name="remboursement" placeholder=" remboursement d'un prêt" class="form-control" aria-label="remboursement">
+                                <input type="number" value="{{ old("remboursement", 0) }}" min="0" max="{{ $max_remboursement }}" name="remboursement" placeholder=" remboursement d'un prêt" class="form-control" aria-label="remboursement">
                                 <span class="input-group-text">.00</span>
                             </div>
                         </div>

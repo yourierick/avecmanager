@@ -29,8 +29,14 @@ class GuestController extends Controller
         $avecs = Avec::with(["animateur", "superviseur", "membres", "axe"])->where('projet_id', $projet_id)->get();
         $projet = ProjetAvec::find($projet_id);
         $current_user = $request->user();
+
+        $breadcrumbs = [
+            ['url'=>url('guest_dashboard', $projet->id), 'label'=>'Accueil'],
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+        ];
+
         return view('layouts.dashboard_guest_layouts.list_des_avecs',
-            compact("avecs", "projet", "current_user"));
+            compact("avecs", "projet", "current_user", "breadcrumbs"));
     }
 
     public function display_avec($avec_id, Request $request): View
@@ -48,9 +54,15 @@ class GuestController extends Controller
         $cas_octroi_soutien = CasOctroiSoutien::where('avec_id', $avec_id)->get();
         $current_user = $request->user();
 
+        $breadcrumbs = [
+            ['url'=>url('guest_dashboard', $projet->id), 'label'=>'Accueil'],
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
+        ];
+
         return view("layouts.dashboard_guest_layouts.afficher_avec", compact("avec",
             "projet", "animateurs", "axes", "comite", "membres", "regles_de_taxation_des_interets",
-            "regles_de_taxation_des_amandes", "cas_octroi_soutien", "current_user"));
+            "regles_de_taxation_des_amandes", "cas_octroi_soutien", "current_user", "breadcrumbs"));
     }
 
 
@@ -77,9 +89,16 @@ class GuestController extends Controller
             }
         }
 
+        $breadcrumbs = [
+            ['url'=>url('guest_dashboard', $projet->id), 'label'=>'Accueil'],
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('display_membre', $membre->id), 'label'=>'Afficher un membre'],
+        ];
+
         return view('layouts.dashboard_guest_layouts.afficher_un_membre', compact("membre",
             "avec", "projet", "fonction", "interets", "membre_fonction", "caisse_amande", "transactionsCount",
-            "current_user"))->with("alert_remboursement", $alert_remboursement);;
+            "current_user", "breadcrumbs"))->with("alert_remboursement", $alert_remboursement);
     }
 
     public function calculateTrend(Collection $data) {
@@ -132,8 +151,15 @@ class GuestController extends Controller
         $parts = $transactions->sum('parts_achetees');
         $credit = $membre->credit + $membre->interets_sur_credit;
 
+        $breadcrumbs = [
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('display_membre', $membre->id), 'label'=>'Afficher un membre'],
+            ['url'=>url('report_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport des transactions du membre'],
+        ];
+
         return view('layouts.dashboard_guest_layouts.reports.rapport_transactions_membre', ['current_user' => $request->user(),
-            'transactions' => $transactions, "projet"=>$projet, "avec"=>$avec, "membre"=>$membre, "parts"=>$parts, "credit"=>$credit,
+            'transactions' => $transactions, "breadcrumbs"=>$breadcrumbs, "projet"=>$projet, "avec"=>$avec, "membre"=>$membre, "parts"=>$parts, "credit"=>$credit,
             ]);
     }
 
@@ -180,9 +206,15 @@ class GuestController extends Controller
         $avec = Avec::with(["animateur", "superviseur"])->find($avec_id);
         $current_user = $request->user();
 
+        $breadcrumbs = [
+            ['url'=>url('display_membre', $membre->id), 'label'=>'Afficher un membre'],
+            ['url'=>url('report_transactions_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport des transactions du membre'],
+            ['url'=>url('report_analytique_du_membre', [$membre->id, $avec->id, $projet->id]), 'label'=>'Rapport analytique des transactions du membre'],
+        ];
+
         return view('layouts.dashboard_guest_layouts.reports.rapport_analytique_membre', compact('labels',
             'values', 'valuesinterets', 'projet', 'avec', 'membre', 'current_user', 'totalAmount', 'averageAmount', 'maxAmount',
-            'trend', 'trendProjection', 'slope', 'intercept', 'trendPercentage', 'totalAmountInterets'));
+            'trend', 'trendProjection', 'slope', 'breadcrumbs', 'intercept', 'trendPercentage', 'totalAmountInterets'));
     }
 
     public function report_analytique_de_avec($avec_id, $projet_id, Request $request) {
@@ -227,9 +259,16 @@ class GuestController extends Controller
         $avec = Avec::with(["animateur", "superviseur"])->find($avec_id);
         $current_user = $request->user();
 
+        $breadcrumbs = [
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('report_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport des transactions de l'avec"],
+            ['url'=>url('report_analytique_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport analytique des transactions de l'avec"],
+        ];
+
         return view('layouts.dashboard_guest_layouts.reports.rapport_analytique_avec', compact('labels',
             'values', 'valuesinterets', 'projet', 'avec', 'current_user', 'totalAmount', 'averageAmount', 'maxAmount',
-            'trend', 'trendProjection', 'slope', 'intercept', 'trendPercentage', 'totalAmountInterets'));
+            'trend', 'trendProjection', 'slope', 'intercept', 'breadcrumbs', 'trendPercentage', 'totalAmountInterets'));
     }
 
     public function report_transactions_de_avec($avec_id, $projet_id, Request $request) {
@@ -269,10 +308,16 @@ class GuestController extends Controller
             }
         }
 
+        $breadcrumbs = [
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('report_transactions_de_avec', [$avec->id, $projet->id]), 'label'=>"Rapport des transactions de l'avec"],
+        ];
+
         return view('layouts.dashboard_guest_layouts.reports.rapport_transactions_avec', compact("projet",
             "transactions", "avec", "cycle_de_gestion", "current_user", "totalMembres",
             "partsTotAchetees", "montantinteret", "montantamande", "montantsolidarite", "montantencaisse",
-            "hommes", "femmes", "actifs", "inactifs", "abandons"));
+            "hommes", "femmes", "actifs", "inactifs", "abandons", "breadcrumbs"));
     }
 
     public function situation_generale_de_avec($avec_id, $projet_id, Request $request) {
@@ -317,10 +362,16 @@ class GuestController extends Controller
             $interets_sur_credit_des_membres[] = ["name"=>$membre->nom ,"value"=>$membre->interets_sur_credit];
         }
 
+        $breadcrumbs = [
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('situation_gen_avec', [$avec->id, $projet->id]), 'label'=>"Situation générale de l'avec"],
+        ];
+
         return view('layouts.dashboard_guest_layouts.reports.situation_generale_avec', compact("projet", "avec",
             "actifs", "inactifs", "abandons", "current_user", "hommes", "femmes", "totalMembres", "caisse_amande", "caisse_epargne",
             "caisse_solidarite", "montant_interet", "montantTotalEpargne", "montantTotalcredit", "interetTotalcredit",
-            "interets_sur_credit_des_membres", "parts_ht_des_membres", "credit_des_membres"));
+            "interets_sur_credit_des_membres", "parts_ht_des_membres", "breadcrumbs", "credit_des_membres"));
     }
 
     public function releve_des_transactions_caisse_solidarite($avec_id, $projet_id, Request $request):View
@@ -354,9 +405,15 @@ class GuestController extends Controller
             }
         }
 
+        $breadcrumbs = [
+            ['url'=>url('lst_des_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('display_avec', $avec->id), 'label'=>'Afficher une avec'],
+            ['url'=>url('transactions_caisse_solidarite', [$avec->id, $projet->id]), 'label'=>"Rélevé des transactions caisse solidarité"],
+        ];
+
         return view('layouts.dashboard_guest_layouts.reports.releve_transactions_de_soutien', compact("projet",
             "transactions", "avec", "current_user", "totalMembres",
             "partsTotAchetees", "montantinteret", "montantamande", "montantsolidarite", "montantencaisse",
-            "hommes", "femmes", "actifs", "inactifs", "abandons", 'transactionsCount'));
+            "hommes", "femmes", "breadcrumbs", "actifs", "inactifs", "abandons", 'transactionsCount'));
     }
 }

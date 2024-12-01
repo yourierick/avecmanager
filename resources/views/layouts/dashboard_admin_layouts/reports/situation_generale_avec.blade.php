@@ -2,21 +2,8 @@
 @section('big_title')
     <div class="row mb-4">
         <div class="col-md-8">
-            <span class="text-muted">PROJET REFERENCE: {{ $projet->code_reference }}</span>
-            <br><span style="color: #ee6900; text-transform: uppercase; font-weight: bold">AVEC: {{ $avec->designation }}</span>
-        </div>
-        <div class="col-md-4">
-            <div class="btn-group dropdown" style="float: right;">
-                <button class="btn dropdown-toggle" type="button" style="background-color: whitesmoke; color: darkblue" data-bs-toggle="dropdown" aria-expanded="false">
-                    Options
-                </button>
-                <ul class="dropdown-menu p-2" role="menu" style="background-color: #ffffff; border: 1px solid blue">
-                    <li>
-                        <a class="dropdown-item btn btn-outline-secondary perso" href="#"><span class="bi-currency-exchange text-primary"></span> relévé des transactions</a>
-                        <div class="dropdown-divider"></div>
-                    </li>
-                </ul>
-            </div>
+            <span class="bi-file-word-fill" style="color: peru"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
+            <br><span style="text-transform: uppercase">AVEC: {{ $avec->designation }}</span>
         </div>
     </div>
 @endsection

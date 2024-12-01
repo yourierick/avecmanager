@@ -1,6 +1,6 @@
 @extends('base')
 @section('big_title')
-    <span class="bi-list" style="color: peru"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
+    <span class="bi-file-word-fill" style="color: peru"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
 @endsection
 @section('content')
     <div class="modal fade" id="ModalSup" tabindex="-1" role="dialog" aria-hidden="true">
@@ -89,8 +89,8 @@
                                     <td class="cell-td">{{ $avec->superviseur->nom }}</td>
                                     <td class="cell-td">{{ $avec->animateur->nom }}</td>
                                     <td class="d-flex">
-                                        <a class="btn-sm text-primary" href="{{ route("projet.afficher_une_avec", $avec->id) }}"><span class="bi-eye"></span></a>
-                                        <button class="btn-sm text-danger" onclick="loadidavec(this)" value="{{ $avec->id }}" data-bs-toggle="modal" data-bs-target="#ModalSup"><span class="bi-trash-fill"></span></button>
+                                        <a class="btn text-primary" href="{{ route("projet.afficher_une_avec", $avec->id) }}"><span class="bi-eye"></span></a>
+                                        <button class="btn text-danger" onclick="loadidavec(this)" value="{{ $avec->id }}" data-bs-toggle="modal" data-bs-target="#ModalSup"><span class="bi-trash-fill"></span></button>
                                     </td>
                                 </tr>
                             @endforeach

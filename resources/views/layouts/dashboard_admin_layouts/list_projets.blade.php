@@ -1,12 +1,9 @@
 @extends('base')
 @section('big_title')
-    <span style="color: peru">PROJETS</span>
-@endsection
-@section('small_description')
-    <span class="bi-list"> liste de tous les projets</span>
+    <span style="color: peru" class="bi-file-word-fill"> PROJETS</span>
 @endsection
 @section('content')
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">

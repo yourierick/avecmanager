@@ -2,12 +2,11 @@
 @section('big_title')
     <span style="color: peru" class="bi-file-word-fill">PROJET {{ $projet->code_reference }}</span>
 @endsection
-@section('small_description', 'configuration de ce projet')
 @section('style')
     <link id="theme-style" rel="stylesheet" href="{{ asset("styles_dashboard/assets/register.css") }}">
 @endsection
 @section('content')
-    <div class="modal fade" id="addRowModalmois" tabindex="-1"
+    <div class="modal fade mt-4" id="addRowModalmois" tabindex="-1"
          role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -107,10 +106,11 @@
         </div>
     </div>
     <div class="p-4 shadow-lg">
-        <h4>Ajouter un staff de gestion du projet</h4>
+
         <form method="post" action="{{ route("register") }}" id="formulaire" class="mt-6 space-y-6 bg-white p-4"
               enctype="multipart/form-data">
             @csrf
+            <h5>Ajouter un staff de gestion du projet</h5>
             <div>
                 <img id="imagePreview" src="{{ asset('assets/utilisateur.png') }}" alt=""
                      style="width: 100px; height: 100px; border-radius: 50px" class="mb-2">

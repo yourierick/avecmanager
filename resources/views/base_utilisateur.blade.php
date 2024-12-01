@@ -252,6 +252,9 @@
 
         <div class="container">
             <div class="page-inner">
+                @if(isset($breadcrumbs) && count($breadcrumbs) > 0)
+                    @include('components.breadcrumb', ['breadcrumbs' => $breadcrumbs])
+                @endif
                 <div>
                     @yield('big_title')
                     <h6 class="op-7 mb-2">@yield('small_description')</h6>

@@ -12,7 +12,7 @@
 @section('big_title')
     <div class="row mb-4">
         <div class="col-md-8">
-            <span style="color: peru">PROJET REFERENCE: {{ $projet->code_reference }}</span>
+            <span style="color: peru" class="bi-file-word-fill"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
         </div>
         <div class="col-md-4">
             <div class="btn-group dropdown" style="float: right;">

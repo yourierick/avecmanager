@@ -1,13 +1,12 @@
 @extends('base_utilisateur')
 @section('big_title')
-    PROJET {{ $projet->code_reference }}
+    <span class="bi-file-word-fill" style="color: peru">PROJET {{ $projet->code_reference }}</span>
 @endsection
-@section('small_description', 'ajouter un nouvel animateur')
 @section('style')
     <link id="theme-style" rel="stylesheet" href="{{ asset("styles_dashboard/assets/register.css") }}">
 @endsection
 @section('content')
-    <div class="p-4 shadow-lg">
+    <div class="p-4 mt-4 shadow-lg">
         <h4>Ajouter un animateur</h4>
         <form method="post" action="{{ route('gestionprojet.ajouter_un_animateur', $projet->id) }}" id="formulaire" class="mt-6 space-y-6"
               enctype="multipart/form-data">

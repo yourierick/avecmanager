@@ -5,9 +5,9 @@ use App\Http\Middleware\CheckAccountType;
 use Illuminate\Support\Facades\Route;
 
 
-Route::middleware('auth', CheckAccountType::class.':utilisateur')->name('gestionprojet.')->group(function () {
+Route::middleware(['auth', CheckAccountType::class.':utilisateur'])->name('gestionprojet.')->group(function () {
     Route::get('/list_personnel_projet/{projet_id}', [EquipeDeGestionController::class, 'list_du_personnel_projet'])
-        ->name('list_du_personnel_projet');
+        ->name('lists_personnel');
     Route::get('/list_avecs/{projet_id}', [EquipeDeGestionController::class, 'list_avecs'])
         ->name('list_avecs');
     Route::get('/ajouter_un_animateur/{projet_id}', [EquipeDeGestionController::class, 'ajouter_un_animateur'])

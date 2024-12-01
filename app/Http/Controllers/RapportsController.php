@@ -71,8 +71,17 @@ class RapportsController extends Controller
         $parts = $transactions->sum('parts_achetees');
         $credit = $membre->credit + $membre->interets_sur_credit;
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('afficher_un_membre', $membre->id), 'label'=>"Afficher le membre"],
+            ['url'=>url('rapport_transactions_membre', [$membre_id, $avec_id, $projet_id]), 'label'=>"Rapports des transactions du membre"],
+        ];
+
         return view('layouts.dashboard_user_layouts.rapports.rapport_transactions_membre', ['current_user' => $request->user(),
-            'transactions' => $transactions, "projet"=>$projet, "avec"=>$avec, "membre"=>$membre, "parts"=>$parts, "credit"=>$credit,]);
+            'transactions' => $transactions, "projet"=>$projet, "avec"=>$avec, "membre"=>$membre, "parts"=>$parts, "credit"=>$credit,
+            "breadcrumbs"=>$breadcrumbs]);
     }
 
     public function rapport_analytique_membre($membre_id, $projet_id, $avec_id, Request $request) {
@@ -118,8 +127,17 @@ class RapportsController extends Controller
         $avec = Avec::with(["animateur", "superviseur"])->find($avec_id);
         $current_user = $request->user();
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Afficher le membre"],
+            ['url'=>url('rapport_transactions_membre', [$membre_id, $avec_id, $projet_id]), 'label'=>"Rapports des transactions du membre"],
+            ['url'=>url('rapport_analytique_membre', [$membre_id, $avec_id, $projet_id]), 'label'=>"Rapport analytique du membre"],
+        ];
+
         return view('layouts.dashboard_user_layouts.rapports.rapport_analytique_membre', compact('labels',
-            'values', 'valuesinterets', 'projet', 'avec', 'membre', 'current_user', 'totalAmount', 'averageAmount', 'maxAmount',
+            'values', 'valuesinterets', 'breadcrumbs', 'projet', 'avec', 'membre', 'current_user', 'totalAmount', 'averageAmount', 'maxAmount',
         'trend', 'trendProjection', 'slope', 'intercept', 'trendPercentage', 'totalAmountInterets'));
     }
 
@@ -166,9 +184,17 @@ class RapportsController extends Controller
         $avec = Avec::with(["animateur", "superviseur"])->find($avec_id);
         $current_user = $request->user();
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('rapport_transactions_avec', [$avec_id, $projet_id]), 'label'=>"Rapports des transactions de l'avec"],
+            ['url'=>url('rapport_analytique_avec', [$avec_id, $projet_id]), 'label'=>"Rapport analytique de l'avec"],
+        ];
+
         return view('layouts.dashboard_user_layouts.rapports.rapport_analytique_avec', compact('labels',
             'values', 'valuesinterets', 'projet', 'avec', 'current_user', 'totalAmount', 'averageAmount', 'maxAmount',
-            'trend', 'trendProjection', 'slope', 'intercept', 'trendPercentage', 'totalAmountInterets'));
+            'trend', 'trendProjection', 'slope', 'breadcrumbs', 'intercept', 'trendPercentage', 'totalAmountInterets'));
     }
 
 
@@ -209,10 +235,17 @@ class RapportsController extends Controller
             }
         }
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('rapport_transactions_avec', [$avec_id, $projet_id]), 'label'=>"Rapports des transactions du membre"],
+        ];
+
         return view('layouts.dashboard_user_layouts.rapports.rapport_transactions_avec', compact("projet",
         "transactions", "avec", "cycle_de_gestion", "current_user", "totalMembres",
         "partsTotAchetees", "montantinteret", "montantamande", "montantsolidarite", "montantencaisse",
-        "hommes", "femmes", "actifs", "inactifs", "abandons"));
+        "hommes", "femmes", "actifs", "inactifs", "abandons", "breadcrumbs"));
     }
 
     public function situation_generale_avec($avec_id, $projet_id, Request $request) {
@@ -257,10 +290,17 @@ class RapportsController extends Controller
             $interets_sur_credit_des_membres[] = ["name"=>$membre->nom ,"value"=>$membre->interets_sur_credit];
         }
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('situation_generale_avec', [$avec_id, $projet_id]), 'label'=>"Situation générale de l'avec"],
+        ];
+
         return view('layouts.dashboard_user_layouts.rapports.situation_generale_avec', compact("projet", "avec",
         "actifs", "inactifs", "abandons", "current_user", "hommes", "femmes", "totalMembres", "caisse_amande", "caisse_epargne",
         "caisse_solidarite", "montant_interet", "montantTotalEpargne", "montantTotalcredit", "interetTotalcredit",
-        "interets_sur_credit_des_membres", "parts_ht_des_membres", "credit_des_membres"));
+        "interets_sur_credit_des_membres", "parts_ht_des_membres", "credit_des_membres", "breadcrumbs"));
     }
 
     public function releve_transactions_caisse_solidarite($avec_id, $projet_id, Request $request):View
@@ -294,9 +334,16 @@ class RapportsController extends Controller
             }
         }
 
+        $breadcrumbs = [
+            ['url'=>url('user_dashboard'), 'label'=>'Accueil'],
+            ['url'=>url('list_avecs', $projet->id), 'label'=>'Liste des avecs'],
+            ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue globale de l'avec"],
+            ['url'=>url('releve_transactions_caisse_solidarite', [$avec_id, $projet_id]), 'label'=>"Rélevé des transactions caisse solidarité"],
+        ];
+
         return view('layouts.dashboard_user_layouts.releve_transactions_de_soutien', compact("projet",
             "transactions", "avec", "current_user", "totalMembres",
             "partsTotAchetees", "montantinteret", "montantamande", "montantsolidarite", "montantencaisse",
-            "hommes", "femmes", "actifs", "inactifs", "abandons", 'transactionsCount'));
+            "hommes", "femmes", "actifs", "inactifs", "abandons", 'transactionsCount', "breadcrumbs"));
     }
 }

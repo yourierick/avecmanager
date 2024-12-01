@@ -3,7 +3,7 @@
     <div class="row mb-4">
         <div class="col-md-8">
             <span class="text-muted">PROJET REFERENCE: {{ $projet->code_reference }}</span>
-            <br><span style="color: #ee6900; text-transform: uppercase; font-weight: bold">AVEC: {{ $avec->designation }}</span>
+            <br><span style=" text-transform: uppercase">AVEC: {{ $avec->designation }}</span>
         </div>
     </div>
 @endsection

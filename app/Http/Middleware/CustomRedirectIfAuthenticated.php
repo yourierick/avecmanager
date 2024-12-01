@@ -28,7 +28,7 @@ class CustomRedirectIfAuthenticated
                         Auth::guard('web')->logout();
                         $request->session()->invalidate();
                         $request->session()->regenerateToken();
-                        return to_route('login')->with('error_message', "cet utilisateur n'est affecté à aucun projet");
+                        return to_route('/')->with('error_message', "cet utilisateur n'est affecté à aucun projet");
                     }
                 }else {
                     return redirect()->intended(route('guest_dashboard', absolute: false));

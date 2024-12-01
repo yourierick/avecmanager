@@ -12,8 +12,8 @@
 @section('big_title')
     <div class="row mb-4">
         <div class="col-md-8">
-            <span class="text-muted">PROJET REFERENCE: {{ $projet->code_reference }}</span>
-            <br><span style="color: #ee6900; text-transform: uppercase; font-weight: bold">AVEC: {{ $avec->designation }}</span>
+            <span class="bi-file-word-fill" style="color: peru"> PROJET REFERENCE: {{ $projet->code_reference }}</span>
+            <br><span style="text-transform: uppercase">AVEC: {{ $avec->designation }}</span>
         </div>
         <div class="col-md-4">
             <div class="btn-group dropdown" style="float: right;">
