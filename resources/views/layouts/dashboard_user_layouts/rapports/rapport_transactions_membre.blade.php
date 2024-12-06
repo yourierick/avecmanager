@@ -117,16 +117,18 @@
                                         <td class="cell-td ln-pdf-td">{{ $transaction->credit_rembourse }} FC</td>
                                         <td class="d-flex">
                                             @if($projet->statut === "en cours")
-                                                @if(in_array("peux modifier une transaction", json_decode($current_user->autorisations, true)))
-                                                    <a href="{{ route('gestionprojet.edit_transaction', $transaction->id) }}" class="btn text-primary"><span class="bi-pencil-square"></span></a>
-                                                @endif
-                                                @if(in_array("peux supprimer une transaction", json_decode($current_user->autorisations, true)))
-                                                    @if($current_user->fonction === "animateur")
-                                                        @if(\Carbon\Carbon::parse($transaction->date_de_la_reunion)->diffInDays() <= 7)
+                                                @if($membre->statut !== "abandon")
+                                                    @if(in_array("peux modifier une transaction", json_decode($current_user->autorisations, true)))
+                                                        <a href="{{ route('gestionprojet.edit_transaction', $transaction->id) }}" class="btn text-primary"><span class="bi-pencil-square"></span></a>
+                                                    @endif
+                                                    @if(in_array("peux supprimer une transaction", json_decode($current_user->autorisations, true)))
+                                                        @if($current_user->fonction === "animateur")
+                                                            @if(\Carbon\Carbon::parse($transaction->date_de_la_reunion)->diffInDays() <= 7)
+                                                                <button class="btn text-danger" data-bs-toggle="modal" data-bs-target="#ModalSup" value="{{ $transaction->id }}" onclick="loadidtransaction(this)"><span class="bi-trash-fill"></span></button>
+                                                            @endif
+                                                        @else
                                                             <button class="btn text-danger" data-bs-toggle="modal" data-bs-target="#ModalSup" value="{{ $transaction->id }}" onclick="loadidtransaction(this)"><span class="bi-trash-fill"></span></button>
                                                         @endif
-                                                    @else
-                                                        <button class="btn text-danger" data-bs-toggle="modal" data-bs-target="#ModalSup" value="{{ $transaction->id }}" onclick="loadidtransaction(this)"><span class="bi-trash-fill"></span></button>
                                                     @endif
                                                 @endif
                                             @endif
