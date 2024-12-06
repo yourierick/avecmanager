@@ -115,15 +115,22 @@
                                         <td class="cell-td ln-pdf-td">{{ $transaction->taux_interet }} %</td>
                                         <td class="cell-td ln-pdf-td">{{ $transaction->date_de_remboursement ? $transaction->date_de_remboursement->format('d/m/Y') : "" }}</td>
                                         <td class="cell-td ln-pdf-td">{{ $transaction->credit_rembourse }} FC</td>
-                                        @if($current_user->fonction === "superviseur")
-                                            <td>
-                                                @if($projet->statut === "en cours")
-                                                    @if(\Carbon\Carbon::parse($transaction->date_de_la_reunion)->diffInDays() <= 7)
-                                                        <button class="btn-sm text-danger" data-bs-toggle="modal" data-bs-target="#ModalSup" value="{{ $transaction->id }}" onclick="loadidtransaction(this)"><span class="bi-trash-fill"></span></button>
+                                        <td class="d-flex">
+                                            @if($projet->statut === "en cours")
+                                                @if(in_array("peux modifier une transaction", json_decode($current_user->autorisations, true)))
+                                                    <a href="{{ route('gestionprojet.edit_transaction', $transaction->id) }}" class="btn text-primary"><span class="bi-pencil-square"></span></a>
+                                                @endif
+                                                @if(in_array("peux supprimer une transaction", json_decode($current_user->autorisations, true)))
+                                                    @if($current_user->fonction === "animateur")
+                                                        @if(\Carbon\Carbon::parse($transaction->date_de_la_reunion)->diffInDays() <= 7)
+                                                            <button class="btn text-danger" data-bs-toggle="modal" data-bs-target="#ModalSup" value="{{ $transaction->id }}" onclick="loadidtransaction(this)"><span class="bi-trash-fill"></span></button>
+                                                        @endif
+                                                    @else
+                                                        <button class="btn text-danger" data-bs-toggle="modal" data-bs-target="#ModalSup" value="{{ $transaction->id }}" onclick="loadidtransaction(this)"><span class="bi-trash-fill"></span></button>
                                                     @endif
                                                 @endif
-                                            </td>
-                                        @endif
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -375,7 +382,7 @@
 
             workbook.xlsx.writeBuffer().then((data) => {
                 const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-                saveAs(blob, 'rapport des transactions de soutien.xlsx');
+                saveAs(blob, 'rapport des transactions.xlsx');
             })
         })
 

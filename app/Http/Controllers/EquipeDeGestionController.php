@@ -125,6 +125,8 @@ class EquipeDeGestionController extends Controller
         $current_user = $request->user();
         if ($current_user->fonction === "superviseur") {
             $animateurs = User::where('projet_id', $projet_id)->where("fonction", "animateur")->where("superviseur_id", $current_user->id)->get();
+        }elseif ($current_user->fonction === "chef de projet") {
+            $animateurs = [];
         }else {
             $animateurs = $current_user;
         }
@@ -138,6 +140,12 @@ class EquipeDeGestionController extends Controller
 
         return view('layouts.dashboard_user_layouts.ajouter_une_avec', compact("projet",
         "current_user", "animateurs", "axes", "breadcrumbs"));
+    }
+
+    public function load_animateurs($superviseur_id)
+    {
+        $animateurs = User::where("superviseur_id", $superviseur_id)->select("id", "nom")->get();
+        return response()->json(["animateurs"=>$animateurs]);
     }
 
     public function save_avec($projet_id, Request $request)
@@ -536,12 +544,12 @@ class EquipeDeGestionController extends Controller
             $montantaremettre = (($membre->part_tot_achetees * $avec->valeur_part) + $gains_interets + $gains_amandes) - $dette;
 
             if ($montantaremettre < 0) {
-                return redirect()->route('gestionprojet.afficher_avec', $avec->id)->with("error", "le statut
+                return redirect()->route('gestionprojet.afficher_un_membre', $membre->id)->with("error", "le statut
                 abandon ne peut être enregistré pour ce membre car ses parts ne suffisent pas à payer ses dettes");
             }else {
                 $caisseepargne->montant += $membre->credit;
                 if ($montantaremettre > $caisseepargne->montant) {
-                    return redirect()->route('gestionprojet.afficher_avec', $avec->id)->with("error", "pas suffisamment
+                    return redirect()->route('gestionprojet.afficher_un_membre', $membre->id)->with("error", "pas suffisamment
                     d'argent dans la caisse pour rembourser le membre, son statut ne sera donc pas modifié");
                 }else {
                     $caisseepargne->montant -= $montanttotalmembre;
@@ -597,6 +605,10 @@ class EquipeDeGestionController extends Controller
         $regles_amande = ReglesDeTaxationDesAmandes::where("avec_id", $avec->id)->get();
         $current_user = $request->user();
 
+        //nombre des reunions actuel
+        $n_reunions = Transactions::where('membre_id', $membre_id)->get()->count() + 1;
+        $modulo_credit = $n_reunions % 4;
+
         $breadcrumbs = [
             ['url'=>url('afficher_avec', $avec->id), 'label'=>"Vue"],
             ['url'=>url('afficher_un_membre', $membre_id), 'label'=>"Membre"],
@@ -604,7 +616,7 @@ class EquipeDeGestionController extends Controller
         ];
 
         return view('layouts.dashboard_user_layouts.membres.transactions', compact("membre", "avec",
-        "projet", "cycle_de_gestion", "regles_amande", "current_user", "breadcrumbs"));
+        "projet", "cycle_de_gestion", "regles_amande", "current_user", "breadcrumbs", "n_reunions", "modulo_credit"));
     }
 
 
@@ -632,24 +644,96 @@ class EquipeDeGestionController extends Controller
                 "cotisation" => ["required"],
             ]);
 
-            if ($request->has("credit")) {
-                $request->validate([
-                    "credit"=>['lte:'. $caisse_epargne->montant]
-                ]);
-            }
-
-            if ($request->has("remboursement")) {
-                $request->validate([
-                    "remboursement"=>['lte:'. $membre->credit + $membre->interets_sur_credit]
-                ]);
-            }
-
             $scan = Transactions::where('projet_id', $projet->id)->where('avec_id', $avec->id)->where('membre_id', $membre_id)->where('mois_id', $request->get("mois_id"))->where('semaine', $request->get('semaine'))->first();
             if (is_null($scan)) {
+                $caisse_epargne->montant = $caisse_epargne->montant + ($avec->valeur_part * $request->parts_achetees);
+
+                $caisse_solidarite = CaisseSolidarite::where('avec_id', $avec->id)->first();
+                if (!is_null($caisse_solidarite)) {
+                    $caisse_solidarite->montant = $caisse_solidarite->montant + $request->cotisation;
+                } else {
+                    $caisse_solidarite = CaisseSolidarite::create([
+                        "projet_id" => $projet->id,
+                        "avec_id" => $avec->id,
+                    ]);
+                    $caisse_solidarite->montant = $caisse_solidarite->montant + $request->cotisation;
+                }
+
+                $caisse_amande = CaisseAmande::where('avec_id', $avec->id)->first();
+                if (!is_null($caisse_amande)) {
+                    $caisse_amande->montant = $caisse_amande->montant + $request->amande;
+                } else {
+                    $caisse_amande = CaisseAmande::create([
+                        "projet_id" => $projet->id,
+                        "avec_id" => $avec->id,
+                    ]);
+                    $caisse_amande->montant = $caisse_amande->montant + $request->amande;
+                }
+
+                $membre->part_tot_achetees += $request->parts_achetees;
+                if ($request->has("credit")) {
+                    if ($request->has("credit")) {
+                        $request->validate([
+                            "credit"=>['lte:'. $caisse_epargne->montant]
+                        ], [
+                            "credit.lte"=>"pas suffisament d'argent dans la caisse pour donner ce prêt"
+                        ]);
+                    }
+                    if ($request->get('credit') != 0) {
+                        $caisse_epargne->montant -= $request->credit;
+                        $interet = ($request->taux_interet * $request->credit) / 100;
+                        $membre->credit += $request->credit;
+                        $membre->interets_sur_credit += $interet;
+                        $membre->date_de_remboursement = $request->get('date_de_remboursement');
+                    }
+                }
+
+                if ($request->has('remboursement')) {
+                    if ($request->has("remboursement")) {
+                        $request->validate([
+                            "remboursement"=>['lte:'. $membre->credit + $membre->interets_sur_credit]
+                        ], [
+                            "remboursement.lte"=>"le montant remboursé est supérieur à l'emprunt du membre"
+                        ]);
+                    }
+                    $interet_genere = 0;
+                    if ($request->get('remboursement') != 0) {
+                        $caisse_interet = CaisseInteret::where("avec_id", $avec->id)->where("mois_id", $request->mois_id)->where("semaine", $request->semaine)->first();
+                        if (is_null($caisse_interet)) {
+                            $caisse_interet = CaisseInteret::create([
+                                "projet_id" => $projet->id,
+                                "avec_id" => $avec->id,
+                                "mois_id" => $request->mois_id,
+                                "semaine" => $request->semaine,
+                            ]);
+                        }
+                        if ($membre->interets_sur_credit >= $request->remboursement) {
+                            $membre->interets_sur_credit -= $request->remboursement;
+                            $interet = $request->remboursement;
+                            $caisse_interet->montant = $caisse_interet->montant + $interet;
+                            $interet_genere = $request->remboursement;
+                        } else {
+                            #étant donné que le remboursement d'une dette commence par le paiement des intérêts pour après payer le montant emprunté,
+                            #cette clause permet de comparer si le montant remboursé est supérieur à la valeur des intérêts alors retrancher le montant restant sur
+                            #le champs crédit du membre après avoir rétranché la première partie sur le champs intérêts_sur_credit du membre.
+
+                            $difference = $request->remboursement - $membre->interets_sur_credit;
+                            $caisse_interet->montant = $caisse_interet->montant + $membre->interets_sur_credit;
+                            $membre->interets_sur_credit = 0;
+                            $membre->credit -= $difference;
+                            if ($membre->credit == 0) {
+                                $membre->date_de_remboursement = null;
+                            }
+                            $caisse_epargne->montant += $difference;
+                            $interet_genere = $membre->interets_sur_credit;
+                        }
+                    }
+                }
                 $transaction = Transactions::create([
                     "projet_id" => $projet->id,
                     "avec_id" => $avec->id,
                     "membre_id" => $membre->id,
+                    "statut_du_membre"=>$membre->statut,
                     "mois_id" => $request->get('mois_id'),
                     "semaine" => $request->get('semaine'),
                     "semaine_debut" => $request->get('semaine_debut'),
@@ -664,136 +748,23 @@ class EquipeDeGestionController extends Controller
                     "taux_interet" => $request->get('taux_interet', 0),
                     "date_de_remboursement"=>$request->get('date_de_remboursement'),
                     "credit_rembourse" => $request->get('remboursement', 0),
-                    "statut_du_membre"=>$membre->statut,
+                    "interet_genere" => $interet_genere,
                 ]);
 
-
-                $caisse_epargne->montant = $caisse_epargne->montant + ($avec->valeur_part * $request->parts_achetees);
-                $caisse_epargne->save();
-
-                $scan = CaisseSolidarite::where("avec_id", $avec->id)->first();
-                if (!is_null($scan)) {
-                    $caisse_solidarite = CaisseSolidarite::where('avec_id', $avec->id)->first();
-
-                    $caisse_solidarite->montant = $caisse_solidarite->montant + $request->cotisation;
-                    $caisse_solidarite->save();
-                } else {
-                    $caisse_solidarite = CaisseSolidarite::create([
-                        "projet_id" => $projet->id,
-                        "avec_id" => $avec->id,
-                    ]);
-
-                    $caisse_solidarite->montant = $caisse_solidarite->montant + $request->cotisation;
-                    $caisse_solidarite->save();
-                }
-
-                $scan = CaisseAmande::where("avec_id", $avec->id)->first();
-                if (!is_null($scan)) {
-                    $caisse_amande = CaisseAmande::where('avec_id', $avec->id)->first();
-
-                    $caisse_amande->montant = $caisse_amande->montant + $request->amande;
-                    $caisse_amande->save();
-                } else {
-                    $caisse_amande = CaisseAmande::create([
-                        "projet_id" => $projet->id,
-                        "avec_id" => $avec->id,
-                    ]);
-
-                    $caisse_amande->montant = $caisse_amande->montant + $request->amande;
-                    $caisse_amande->save();
-                }
-
-                $membre->part_tot_achetees += $request->parts_achetees;
-                if ($request->has("credit")) {
-                    if ($request->get('credit') != 0) {
-                        $caisse_epargne = CaisseEpargne::where('avec_id', $avec->id)->first();
-                        $caisse_epargne->montant -= $request->credit;
-
-                        $caisse_epargne->save();
-
-                        $transaction->credit = $request->credit;
-                        $transaction->taux_interet = $request->taux_interet;
-                        $transaction->date_de_remboursement = $request->get('date_de_remboursement');
-
-                        $transaction->update();
-
-                        $interet = ($request->taux_interet * $request->credit) / 100;
-
-                        $membre->credit += $request->credit;
-                        $membre->interets_sur_credit += $interet;
-                        $membre->date_de_remboursement = $request->get('date_de_remboursement');
-                    }
-                }
-
-                if ($request->has('remboursement')) {
-                    $scan = CaisseInteret::where("avec_id", $avec->id)->where("mois_id", $request->mois_id)->where("semaine", $request->semaine)->first();
-                    if ($request->get('remboursement') != 0) {
-                        if ($membre->interets_sur_credit >= $request->remboursement) {
-                            $membre->interets_sur_credit -= $request->remboursement;
-
-                            $interet = $request->remboursement;
-                            if (!is_null($scan)) {
-                                $caisse_interet = CaisseInteret::where("avec_id", $avec->id)->where("mois_id", $request->mois_id)->where("semaine", $request->semaine)->first();
-
-                                $caisse_interet->montant = $caisse_interet->montant + $interet;
-                                $caisse_interet->save();
-                            } else {
-                                $caisse_interet = CaisseInteret::create([
-                                    "projet_id" => $projet->id,
-                                    "avec_id" => $avec->id,
-                                    "mois_id" => $request->mois_id,
-                                    "semaine" => $request->semaine,
-                                ]);
-
-                                $caisse_interet->montant = $caisse_interet->montant + $interet;
-                                $caisse_interet->save();
-                            }
-
-                            $transaction->interet_genere = $request->remboursement;
-                        } else {
-                            #étant donné que le remboursement d'une dette commence par le paiement des intérêts pour après payer le montant emprunté,
-                            #cette clause permet de comparer si le montant remboursé est supérieur à la valeur des intérêts alors retrancher le montant restant sur
-                            #le champs crédit du membre après avoir rétranché la première partie sur le champs intérêts_sur_credit du membre.
-
-                            $difference = $request->remboursement - $membre->interets_sur_credit;
-
-                            if (!is_null($scan)) {
-                                $caisse_interet = CaisseInteret::where("avec_id", $avec->id)->where("mois_id", $request->mois_id)->where("semaine", $request->semaine)->first();
-
-                                $caisse_interet->montant = $caisse_interet->montant + $membre->interets_sur_credit;
-                                $caisse_interet->save();
-                            } else {
-                                $caisse_interet = CaisseInteret::create([
-                                    "projet_id" => $projet->id,
-                                    "avec_id" => $avec->id,
-                                    "mois_id" => $request->mois_id,
-                                    "semaine" => $request->semaine,
-                                ]);
-
-                                $caisse_interet->montant = $caisse_interet->montant + $membre->interets_sur_credit;
-                                $caisse_interet->save();
-                            }
-
-                            $membre->interets_sur_credit = 0;
-                            $membre->credit -= $difference;
-
-                            if ($membre->credit == 0) {
-                                $membre->date_de_remboursement = null;
-                            }
-                            $membre->save();
-
-                            $caisse_epargne->montant += $difference;
-                            $caisse_epargne->save();
-
-                            $transaction->interet_genere = $membre->interets_sur_credit;
-                        }
-
-                        $transaction->credit_rembourse = $request->get('remboursement');
-                        $transaction->update();
-                    }
-                }
-
                 $membre->update();
+                if (isset($caisse_interet)){
+                    $caisse_interet->update();
+                }
+                if (isset($caisse_solidarite)){
+                    $caisse_solidarite->update();
+                }
+                if (isset($caisse_amande)){
+                    $caisse_amande->update();
+                }
+                if (isset($caisse_epargne)){
+                    $caisse_epargne->update();
+                }
+
                 return redirect()->route("gestionprojet.afficher_un_membre", $membre->id)->with("success", "la transaction a été effectué");
             } else {
                 return redirect()->back()->with("error", "cette transaction a déjà été effectué");
@@ -851,12 +822,7 @@ class EquipeDeGestionController extends Controller
                 break;
             }
         }
-
-        //nombre des reunions actuel
-        $n_reunions = Transactions::where('membre_id', $membre_id)->get()->count() + 1;
-        $modulo_credit = $n_reunions % 4;
-
-        return response()->json(["semaine" => $semaine, "num_reunion"=>$n_reunions, "modulo_credit"=>$modulo_credit]);
+        return response()->json(["semaine" => $semaine]);
     }
 
     public function supprimer_transaction(Request $request): RedirectResponse
@@ -984,5 +950,202 @@ class EquipeDeGestionController extends Controller
         $transaction->delete();
 
         return redirect()->back()->with("success", "la transaction a été supprimé");
+    }
+
+    public function edit_transaction($transaction_id, Request $request):View {
+        $transaction = Transactions::with('membre', 'cycle_de_gestion', 'avec', 'projet')->find($transaction_id);
+        $current_user = $request->user();
+        $cycle_de_gestion = CycleDeGestion::where('projet_id', $transaction->projet_id)->get();
+        $regles_amande = ReglesDeTaxationDesAmandes::where("avec_id", $transaction->avec_id)->get();
+
+        //nombre des reunions actuel
+        $n_reunions = Transactions::where('membre_id', $transaction->membre_id)->get()->count();
+        $modulo_credit = $n_reunions % 4;
+
+        $breadcrumbs = [
+            ['url'=>url('afficher_avec', $transaction->avec->id), 'label'=>"Vue"],
+            ['url'=>url('afficher_un_membre', $transaction->membre->id), 'label'=>"Membre"],
+            ['url'=>url('transactions_hebdomadaire', $transaction->membre->id), 'label'=>"Nouvelle transaction"],
+        ];
+
+        return view("layouts.dashboard_user_layouts.membres.edit_transactions", compact("transaction",
+            "current_user", "cycle_de_gestion", "regles_amande", "breadcrumbs", "modulo_credit"));
+    }
+
+    public function save_edition_transaction_membre($transaction_id, Request $request):RedirectResponse
+    {
+        $transaction = Transactions::with("avec", "projet", "membre")->find($transaction_id);
+        $membre_id = $transaction->membre->id;
+        $avec = $transaction->avec;
+        $projet = $transaction->projet;
+        $request->validate([
+            "mois_id"=>["required"],
+            "semaine_debut"=>["required"],
+            "semaine_fin"=>["required"],
+            "date_de_la_reunion"=>["required"],
+            "frequentation"=>["required"],
+            "parts_achetees"=>["required", "min:1", 'numeric', 'lte:'.$transaction->avec->maximum_part_achetable],
+            "cotisation"=>["required", 'numeric', function ($attribute, $value, $fail) use ($avec) {
+                if ($value != $avec->valeur_montant_solidarite) {
+                    $fail("le montant de cotisation doit être égal à ".$avec->valeur_montant_solidarite);
+                }
+            }],
+        ], [
+            "mois_id.required"=>"ce champs est obligatoire",
+            "semaine_debut.required"=>"ce champs est obligatoire",
+            "semaine_fin.required"=>"ce champs est obligatoire",
+            "date_de_la_reunion.required"=>"ce champs est obligatoire",
+            "frequentation.required"=>"ce champs est obligatoire",
+            "parts_achetees.required"=>"ce champs est obligatoire",
+            "parts_achetees.min"=>"ce champs doit avoir le minimum de 1 comme valeur",
+            "parts_achetees.numeric"=>"seules les valeurs numériques sont acceptées",
+            "parts_achetees.lte"=>"la valeur des parts achetées doit être inférieure ou égale à ".$avec->maximum_part_achetable,
+            "cotisation.required"=>"ce champs est obligatoire",
+            "cotisation.numeric"=>"seules les valeurs numériques sont acceptées",
+        ]);
+
+        $request->validate([
+            'semaine' => ['required', function ($attribute, $value, $fail) use ($membre_id, $transaction_id, $request) {
+                $exists = Transactions::where('membre_id', $membre_id)->where('mois_id',
+                    $request->input('mois_id'))->where('semaine', $value)->where('id', '!=', $transaction_id)->exists();
+                if ($exists) {
+                    $fail('cette semaine existe déjà pour le mois sélectionné pour ce membre.');
+                }
+            }]
+        ]);
+
+        $caisse_epargne = CaisseEpargne::where('avec_id', $transaction->avec->id)->first();
+        $caisse_amande = CaisseAmande::where('avec_id', $transaction->avec->id)->first();
+        $caisse_solidarite = CaisseSolidarite::where('avec_id', $transaction->avec->id)->first();
+        $caisse_interet = CaisseInteret::where("avec_id", $transaction->avec->id)->where("mois_id",
+            $transaction->mois_id)->where("semaine", $transaction->semaine)->first();
+
+        $membre = $transaction->membre;
+
+        //suppression de la transaction pour le membre et les caisses avant d'appliquer les nouvelles valeurs editées par l'utilisateur
+        $membre->part_tot_achetees = $membre->part_tot_achetees - $transaction->parts_achetees;
+        $membre->credit = $membre->credit - $transaction->credit;
+        $interets_sur_credit = ($transaction->credit * $transaction->taux_interet)/100;
+        $membre->interets_sur_credit = $membre->interets_sur_credit - $interets_sur_credit;
+        $membre->date_de_remboursement = null;
+        $interet_genere = 0;
+
+
+        $montant_achete = $transaction->parts_achetees * $transaction->avec->valeur_part;
+        $caisse_epargne->montant = $caisse_epargne->montant - $montant_achete - ($transaction->credit_rembourse - $transaction->interet_genere) + $transaction->credit;
+        $caisse_amande->montant = $caisse_amande->montant - $transaction->amande;
+        $caisse_solidarite->montant = $caisse_solidarite->montant - $transaction->cotisation;
+
+        if(!is_null($caisse_interet)) {
+            $caisse_interet->montant = $caisse_interet->montant - $transaction->interet_genere;
+        }
+
+        if ($request->frequentation === "présent(e)") {
+            //mise à jour des informations dans les tables connexes
+            $membre->part_tot_achetees += $request->input('parts_achetees');
+            $interet = ($request->input('taux_interet', 0) * $request->input('credit', 0)) / 100;
+
+            $caisse_epargne->montant = $caisse_epargne->montant + ($request->input('parts_achetees') * $transaction->avec->valeur_part);
+            $caisse_amande->montant = $caisse_amande->montant + $request->input('amande', 0);
+            $caisse_solidarite->montant = $caisse_solidarite->montant + $request->input('cotisation', 0);
+
+            if ($request->has("credit")) {
+                $request->validate([
+                    "credit"=>['lte:'. $caisse_epargne->montant]
+                ]);
+            }
+
+            if ($request->has("credit")) {
+                if ($request->get('credit') != 0) {
+                    $caisse_epargne->montant = $caisse_epargne->montant - $request->credit;
+                    $interet = ($request->taux_interet * $request->credit) / 100;
+
+                    $membre->credit = $membre->credit + $request->credit;
+                    $membre->interets_sur_credit = $membre->interets_sur_credit + $interet;
+                    $membre->date_de_remboursement = $request->get('date_de_remboursement');
+                }
+            }
+
+            if ($request->has('remboursement')) {
+                if ($request->has("remboursement")) {
+                    $request->validate([
+                        "remboursement"=>['lte:'. $membre->credit + $membre->interets_sur_credit]
+                    ], [
+                        "remboursement.lte"=>"le montant remboursé est supérieur à l'emprunt du membre"
+                    ]);
+                }
+
+                if ($request->get('remboursement') != 0) {
+                    $caisse_interet = CaisseInteret::where("avec_id", $avec->id)->where("mois_id", $request->mois_id)->where("semaine", $request->semaine)->first();
+                    if (is_null($caisse_interet)) {
+                        $caisse_interet = CaisseInteret::create([
+                            "projet_id" => $projet->id,
+                            "avec_id" => $avec->id,
+                            "mois_id" => $request->mois_id,
+                            "semaine" => $request->semaine,
+                        ]);
+                    }
+                    if ($membre->interets_sur_credit >= $request->remboursement) {
+                        $membre->interets_sur_credit = $membre->interets_sur_credit + $request->remboursement;
+                        $interet = $request->remboursement;
+                        $caisse_interet->montant = $caisse_interet->montant + $interet;
+                        $interet_genere = $request->remboursement;
+                    } else {
+                        #étant donné que le remboursement d'une dette commence par le paiement des intérêts pour après payer le montant emprunté,
+                        #cette clause permet de comparer si le montant remboursé est supérieur à la valeur des intérêts alors retrancher le montant restant sur
+                        #le champs crédit du membre après avoir rétranché la première partie sur le champs intérêts_sur_credit du membre.
+
+                        $difference = $request->remboursement - $membre->interets_sur_credit;
+                        $caisse_interet->montant = $caisse_interet->montant + $membre->interets_sur_credit;
+                        $membre->interets_sur_credit = 0;
+                        $membre->credit = $membre->credit + $difference;
+                        if ($membre->credit == 0) {
+                            $membre->date_de_remboursement = null;
+                        }
+                        $caisse_epargne->montant = $caisse_epargne->montant + $difference;
+                        $interet_genere = $membre->interets_sur_credit;
+                    }
+                }
+            }
+            $transaction->parts_achetees = $request->input('parts_achetees');
+            $transaction->cotisation = $request->input('cotisation');
+            $transaction->amande = $request->input('amande');
+            $transaction->mois_id = $request->input('mois_id');
+            $transaction->semaine = $request->input('semaine');
+            $transaction->semaine_debut = $request->input('semaine_debut');
+            $transaction->semaine_fin = $request->input('semaine_fin');
+            $transaction->date_de_la_reunion = $request->input('date_de_la_reunion');
+            $transaction->frequentation = $request->input('frequentation');
+            $transaction->credit_rembourse = $request->input('remboursement');
+            $transaction->interet_genere = $interet_genere;
+            $transaction->credit = $request->input('credit');
+            $transaction->taux_interet = $request->input('taux_interet');
+            $transaction->date_de_remboursement = $request->get('date_de_remboursement');
+        }else {
+            $transaction->parts_achetees = 0;
+            $transaction->cotisation = 0;
+            $transaction->amande = 0;
+            $transaction->mois_id = $request->input('mois_id');
+            $transaction->semaine = $request->input('semaine');
+            $transaction->semaine_debut = $request->input('semaine_debut');
+            $transaction->semaine_fin = $request->input('semaine_fin');
+            $transaction->date_de_la_reunion = $request->input('date_de_la_reunion');
+            $transaction->frequentation = $request->input('frequentation');
+            $transaction->credit_rembourse = 0;
+            $transaction->interet_genere = 0;
+            $transaction->credit = 0;
+            $transaction->taux_interet = 0;
+            $transaction->date_de_remboursement = null;
+        }
+
+        $membre->update();
+        $caisse_interet ? $caisse_interet->update() : 0;
+        $caisse_epargne->update();
+        $caisse_amande->update();
+        $caisse_solidarite->update();
+        $transaction->update();
+
+        return redirect()->route('rapports.rapport_transactions_membre',
+            [$membre_id, $transaction->projet->id, $transaction->avec->id])->with('success', "la transaction a été modifié");
     }
 }

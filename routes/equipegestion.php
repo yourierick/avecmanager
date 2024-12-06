@@ -15,6 +15,9 @@ Route::middleware(['auth', CheckAccountType::class.':utilisateur'])->name('gesti
     Route::post('/ajouter_un_animateur/{projet_id}', [EquipeDeGestionController::class, 'save_animateur']);
     Route::get('/ajouter_une_avec/{projet_id}', [EquipeDeGestionController::class, 'ajouter_une_avec'])
         ->name('ajouter_une_avec');
+    Route::get('/load_animateurs/{superviseur_id}', [EquipeDeGestionController::class,
+        'load_animateurs'])->name('load_animateurs');
+
     Route::post("/ajouter_une_avec/{projet_id}", [EquipeDeGestionController::class, 'save_avec']);
 
     Route::get('afficher_avec/{avec_id}', [EquipeDeGestionController::class,
@@ -76,4 +79,8 @@ Route::middleware(['auth', CheckAccountType::class.':utilisateur'])->name('gesti
         [EquipeDeGestionController::class, 'supprimer_transaction'])->name('supprimer_transaction');
     Route::get("/load_semaines/{mois_id}/{membre_id}/{avec_id}",
         [EquipeDeGestionController::class, 'load_semaines'])->name("load_semaines");
+
+    Route::get("edit_transaction/{transaction_id}", [EquipeDeGestionController::class,
+        'edit_transaction'])->name("edit_transaction");
+    Route::put("save_edition_transaction_membre/{transaction_id}", [EquipeDeGestionController::class, 'save_edition_transaction_membre'])->name("save_edition_transaction_membre");
 });

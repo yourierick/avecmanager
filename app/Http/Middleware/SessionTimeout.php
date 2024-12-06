@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SessionTimeout
 {
-    protected $timeout = 900;
+    protected $timeout = 1800; //30 minutes avant l'expiration de la session;
 
     public function handle(Request $request, Closure $next): Response
     {

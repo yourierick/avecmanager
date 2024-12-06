@@ -97,6 +97,24 @@
                     </div>
                     <x-input-error :messages="$errors->get('superviseur_id')" class="mt-2 text-danger"/>
                 </div>
+            @elseif($current_user->fonction === "chef de projet")
+                <div class="mb-3">
+                    <div class="form-group form-group-default">
+                        <label for="id_superviseur">superviseur</label>
+                        <select id="id_superviseur" onchange="loadanimateurs(this)" name="superviseur_id" class="form-control" required>
+                            @php
+                                $superviseurs = \App\Models\User::where("projet_id", $current_user->projet_id)->where("fonction", "superviseur")->get();
+                            @endphp
+                            <option selected disabled>----------------</option>
+                            @foreach($superviseurs as $superviseur)
+                                <option @if(old("superviseur_id") === $superviseur->id) selected @endif value="{{ $superviseur->id }}">
+                                    {{ $superviseur->nom }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <x-input-error :messages="$errors->get('superviseur_id')" class="mt-2 text-danger"/>
+                </div>
             @else
                 <div class="mb-3">
                     <div class="form-group form-group-default">
@@ -113,28 +131,39 @@
                     <x-input-error :messages="$errors->get('superviseur_id')" class="mt-2 text-danger"/>
                 </div>
             @endif
+
             @if($current_user->fonction !== "animateur")
-                <div class="mb-3">
-                    <div class="form-group form-group-default">
-                        <label for="id_animateur">animateur</label>
-                        <select id="id_animateur" name="animateur_id" class="form-control" required>
-                            @foreach($animateurs as $animateur)
-                                <option value="{{ $animateur->id }}">
-                                    {{ $animateur->nom }}
-                                </option>
-                            @endforeach
-                        </select>
+                @if($current_user->fonction === "superviseur")
+                    <div class="mb-3">
+                        <div class="form-group form-group-default">
+                            <label for="id_animateur">animateur</label>
+                            <select id="id_animateur" name="animateur_id" class="form-control" required>
+                                @foreach($animateurs as $animateur)
+                                    <option value="{{ $animateur->id }}">
+                                        {{ $animateur->nom }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <x-input-error :messages="$errors->get('animateur_id')" class="mt-2 text-danger"/>
                     </div>
-                    <x-input-error :messages="$errors->get('animateur_id')" class="mt-2 text-danger"/>
-                </div>
+                @else
+                    <div class="mb-3">
+                        <div class="form-group form-group-default">
+                            <label for="id_animateur">animateurs</label>
+                            <select id="id_animateur" name="animateur_id" class="form-control" required>
+                                <option selected disabled>----------------</option>
+                            </select>
+                        </div>
+                        <x-input-error :messages="$errors->get('animateur_id')" class="mt-2 text-danger"/>
+                    </div>
+                @endif
             @else
                 <div class="mb-3">
                     <div class="form-group form-group-default">
                         <label for="id_animateur">animateur</label>
                         <select id="id_animateur" name="animateur_id" class="form-control" required>
-                            <option value="{{ $current_user->id }}">
-                                {{ $current_user->nom }}
-                            </option>
+                            <option selected disabled>-----------------</option>
                         </select>
                     </div>
                     <x-input-error :messages="$errors->get('animateur_id')" class="mt-2 text-danger"/>
@@ -180,5 +209,48 @@
                 });
             });
         @endif
+
+        function loadanimateurs(element) {
+            let select_animateur = $('#id_animateur');
+            $.ajax({
+                url: '../load_animateurs/' + element.value,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (!data.animateurs) {
+                        $.notify({
+                            icon: 'icon-bell',
+                            title: 'Avecmanager',
+                            message: "aucune donnée n'a été chargé",
+                        }, {
+                            type: 'info',
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            time: 1000,
+                        });
+                    }else {
+                        select_animateur.empty();
+                        data.animateurs.forEach(function (superviseur) {
+                            select_animateur.append('<option value="' + superviseur.id + '">' + superviseur.nom + '</option>');
+                        })
+                    }
+                }, error: function (xhr, status, error){
+                    $.notify({
+                        icon: 'icon-bell',
+                        title: 'Avecmanager',
+                        message: error,
+                    }, {
+                        type: 'danger',
+                        placement: {
+                            from: "bottom",
+                            align: "right"
+                        },
+                        time: 1000,
+                    });
+                }
+            })
+        }
     </script>
 @endsection

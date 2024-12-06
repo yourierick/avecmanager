@@ -150,7 +150,7 @@
                                 @endphp
                                 {{ $montant }} FC
                             </h2>
-                            <p>Total épargné</p>
+                            <p>Total épargné à ce jour</p>
                             <div class="pull-in sparkline-fix chart-as-background">
                                 <div id="lineChart4"><canvas width="321" height="70" style="display: inline-block; width: 321.328px; height: 70px; vertical-align: top;"></canvas></div>
                             </div>
@@ -161,7 +161,7 @@
                     <div class="card card-black">
                         <div class="card-body pb-0">
                             <h2 class="mb-2">{{ $montantTotalcredit }} FC</h2>
-                            <p>Crédit</p>
+                            <p>Crédit total à rembourser</p>
                             <div class="pull-in sparkline-fix chart-as-background">
                                 <div id="lineChart5"><canvas width="321" height="70" style="display: inline-block; width: 321.328px; height: 70px; vertical-align: top;"></canvas></div>
                             </div>
@@ -172,7 +172,7 @@
                     <div class="card card-success bg-success2">
                         <div class="card-body pb-0">
                             <h2 class="mb-2">{{ $interetTotalcredit }} FC</h2>
-                            <p>Intérêt total sur crédit</p>
+                            <p>Intérêt total sur crédit à récevoir</p>
                             <div class="pull-in sparkline-fix chart-as-background">
                                 <div id="lineChart6"><canvas width="321" height="70" style="display: inline-block; width: 321.328px; height: 70px; vertical-align: top;"></canvas></div>
                             </div>

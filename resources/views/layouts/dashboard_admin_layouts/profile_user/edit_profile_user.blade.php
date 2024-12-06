@@ -152,7 +152,7 @@
                 <x-input-error :messages="$errors->get('superviseur_id')" class="mt-2 text-danger"/>
             </div>
 
-            @if ($user->fonction === "superviseur" || $user->fonction === "animateur")
+            @if ($user->fonction === "superviseur" || $user->fonction === "animateur" || $user->fonction === "chef de projet")
                 <div class="mb-3 shadow p-3 bg-white">
                     <div class="col-12 col-md-4">
                         <span style="color: dodgerblue">Droits d'utilisateur</span>
@@ -161,7 +161,7 @@
                     <div class="col-12 col-md-8">
                         <div class="app-card app-card-settings p-4">
                             <div class="app-card-body">
-                                @if($user->fonction === "superviseur")
+                                @if($user->fonction === "superviseur" || $user->fonction === "chef de projet")
                                     <div class="form-check form-switch">
                                         <input type="checkbox" class="form-check-input" value="peux ajouter un animateur" name="autorisation[]" id="checkbox-1" @if($user->autorisations !== null) @if(in_array('peux ajouter un animateur', json_decode($user->autorisations, true))) checked @endif @endif>
                                         <label class="form-check-label" for="checkbox-1">
@@ -169,7 +169,7 @@
                                         </label>
                                     </div><!--//form-check-->
                                 @endif
-                                @if($user->fonction === "superviseur" || $user->fonction === "animateur")
+                                @if($user->fonction === "chef de projet" || $user->fonction === "superviseur" || $user->fonction === "animateur")
                                     <div class="form-check form-switch">
                                         <input type="checkbox" class="form-check-input" value="peux faire une transaction" name="autorisation[]" id="checkbox-2" @if($user->autorisations !== null) @if(in_array('peux faire une transaction', json_decode($user->autorisations, true))) checked @endif @endif>
                                         <label class="form-check-label" for="checkbox-2">
@@ -198,6 +198,18 @@
                                         <input type="checkbox" class="form-check-input" value="peux configurer une avec" name="autorisation[]" id="checkbox-7" @if($user->autorisations !== null) @if(in_array('peux configurer une avec', json_decode($user->autorisations, true))) checked @endif @endif>
                                         <label class="form-check-label" for="checkbox-7">
                                             peux configurer une avec
+                                        </label>
+                                    </div><!--//form-check-->
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" value="peux supprimer une transaction" name="autorisation[]" id="checkbox-8" @if($user->autorisations !== null) @if(in_array('peux supprimer une transaction', json_decode($user->autorisations, true))) checked @endif @endif>
+                                        <label class="form-check-label" for="checkbox-8">
+                                            peux supprimer une transaction
+                                        </label>
+                                    </div><!--//form-check-->
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" value="peux modifier une transaction" name="autorisation[]" id="checkbox-9" @if($user->autorisations !== null) @if(in_array('peux modifier une transaction', json_decode($user->autorisations, true))) checked @endif @endif>
+                                        <label class="form-check-label" for="checkbox-9">
+                                            peux modifier une transaction
                                         </label>
                                     </div><!--//form-check-->
                                 @endif

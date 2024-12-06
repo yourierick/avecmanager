@@ -61,9 +61,7 @@
                 <div class="form-group form-group-default">
                     <label for="id_fonction">fonction</label>
                     <select id="id_fonction" name="fonction" class="form-control" required>
-                        <option @if( old('fonction') === "animateur" ) selected
-                                @endif value="animateur">animateur
-                        </option>
+                        <option @if( old('fonction') === "animateur" ) selected @endif value="animateur">animateur</option>
                     </select>
                 </div>
                 <x-input-error :messages="$errors->get('fonction')" class="mt-2 text-danger"/>
@@ -81,7 +79,7 @@
                 </div>
             @endif
             @if($current_user->fonction === "chef de projet")
-                <div class="mb-3" id="div_superviseur" style="display: none">
+                <div class="mb-3" id="div_superviseur">
                     <div class="form-group form-group-default">
                         <label for="id_superviseur">superviseur</label>
                         <select id="id_superviseur" name="superviseur_id" class="form-control" required>

@@ -26,10 +26,10 @@
     <div class="row mb-4">
         <div class="col-md-8">
             <span class="text-muted bi-file-word-fill">
-                PROJET REFERENCE: {{ $projet->code_reference }}
+                PROJET REFERENCE: {{ $transaction->projet->code_reference }}
             </span>
             <br><span style="color: #ee6900; text-transform: uppercase; font-weight: bold">
-                AVEC: {{ $avec->designation }}
+                AVEC: {{ $transaction->avec->designation }}
             </span>
         </div>
     </div>
@@ -44,15 +44,15 @@
                     <div class="row">
                         <div class="col-5">
                             <div class="icon-big text-center">
-                                <img src="/storage/{{ $membre->photo }}" style="width: 100px; height: 100px; border-radius: 50px" class="mb-2" alt="...">
+                                <img src="/storage/{{ $transaction->membre->photo }}" style="width: 100px; height: 100px; border-radius: 50px" class="mb-2" alt="...">
                             </div>
                         </div>
                         <div class="col-7 col-stats m-0 p-0">
                             <div class="numbers">
-                                <p class="m-0 text-primary" style="font-weight: bold">MEMBRE ID: {{ $membre->id }}</p>
-                                <p class="m-0 text-secondary">{{ $membre->nom}}</p>
-                                <p class="m-0">Sexe: {{ $membre->sexe}}</p>
-                                <p class="m-0">Télephone: {{ $membre->numeros_de_telephone}}</p>
+                                <p class="m-0 text-primary" style="font-weight: bold">MEMBRE ID: {{ $transaction->membre->id }}</p>
+                                <p class="m-0 text-secondary">{{ $transaction->membre->nom}}</p>
+                                <p class="m-0">Sexe: {{ $transaction->membre->sexe}}</p>
+                                <p class="m-0">Télephone: {{ $transaction->membre->numeros_de_telephone}}</p>
                             </div>
                         </div>
                     </div>
@@ -65,12 +65,12 @@
                     <h3>SITUATION DE DETTE DU MEMBRE</h3>
                     <p class="m-0 p-1" style="color: darkorange; font-weight: bold">
                         @php
-                            $dette = $membre->credit + $membre->interets_sur_credit
+                            $dette = $transaction->membre->credit + $transaction->membre->interets_sur_credit
                         @endphp
                         PRET: {{ $dette }} FC
                     </p>
                     <p class="m-0 p-1">
-                        Date de remboursement: <span @if($membre->date_de_remboursement <= \Carbon\Carbon::today()) @class(['bx-flashing']) @endif>{{ $membre->date_de_remboursement ? $membre->date_de_remboursement->format('d/m/Y') : "" }}</span>
+                        Date de remboursement: <span @if($transaction->membre->date_de_remboursement <= \Carbon\Carbon::today()) @class(['bx-flashing']) @endif>{{ $transaction->membre->date_de_remboursement ? $transaction->membre->date_de_remboursement->format('d/m/Y') : "" }}</span>
                     </p>
                 </div>
             </div>
@@ -78,15 +78,16 @@
     </div>
     <div class="p-4 shadow-lg">
         <h4>mouvement monétaire hebdomadaire du membre</h4>
-        <form method="post" action="{{ route('gestionprojet.save_transactions_hebdomadaire', $membre->id) }}" class="mt-6 space-y-6">
+        <form method="post" action="{{ route('gestionprojet.save_edition_transaction_membre', $transaction->id) }}" class="mt-6 space-y-6">
             @csrf
+            @method('put')
             <div class="mb-3">
                 <div class="form-group form-group-default">
                     <label for="id_mois">mois</label>
-                    <select name="mois_id" id="id_mois" onchange="load_semaines(this)" class="form-control" required>
+                    <select name="mois_id" id="id_mois" class="form-control" required>
                         <option selected disabled>--------------</option>
                         @foreach($cycle_de_gestion as $mois)
-                            <option value="{{ $mois->id }}">{{ $mois->designation }}</option>
+                            <option @if(old('mois_id', $transaction->cycle_de_gestion->id) == $mois->id) selected @endif value="{{ $mois->id }}">{{ $mois->designation }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -96,7 +97,11 @@
                 <div class="form-group form-group-default">
                     <label for="id_semaine">semaine</label>
                     <select name="semaine" id="id_semaine" class="form-control" required>
-                        <option selected disabled>--------------</option>
+                        <option @if(old("semaine", $transaction->semaine) === "semaine 1") selected @endif value="{{ $transaction->semaine }}">semaine 1</option>
+                        <option @if(old("semaine", $transaction->semaine) === "semaine 2") selected @endif value="{{ $transaction->semaine }}">semaine 2</option>
+                        <option @if(old("semaine", $transaction->semaine) === "semaine 3") selected @endif value="{{ $transaction->semaine }}">semaine 3</option>
+                        <option @if(old("semaine", $transaction->semaine) === "semaine 4") selected @endif value="{{ $transaction->semaine }}">semaine 4</option>
+                        <option @if(old("semaine", $transaction->semaine) === "semaine 5") selected @endif value="{{ $transaction->semaine }}">semaine 5</option>
                     </select>
                 </div>
                 <x-input-error :messages="$errors->get('semaine')" class="mt-2 text-danger"/>
@@ -106,7 +111,7 @@
                     <label for="semaine_debut">semaine du</label>
                     <input id="semaine_debut" name="semaine_debut" type="date"
                            class="form-control"
-                           value="{{ old('semaine_debut') }}" required
+                           value="{{ old('semaine_debut', $transaction->semaine_debut->format('Y-m-d')) }}" required
                     />
                 </div>
                 <x-input-error :messages="$errors->get('semaine_debut')" class="mt-2 text-danger"/>
@@ -116,7 +121,7 @@
                     <label for="semaine_fin">au</label>
                     <input id="semaine_fin" name="semaine_fin" type="date"
                            class="form-control"
-                           value="{{ old('semaine_fin') }}" required
+                           value="{{ old('semaine_fin', $transaction->semaine_fin->format('Y-m-d')) }}" required
                     />
                 </div>
                 <x-input-error :messages="$errors->get('semaine_fin')" class="mt-2 text-danger"/>
@@ -126,7 +131,7 @@
                     <label for="date_de_la_reunion">date de la réunion</label>
                     <input id="date_de_la_reunion" name="date_de_la_reunion" type="date"
                            class="form-control"
-                           value="{{ old('date_de_la_reunion') }}" required
+                           value="{{ old('date_de_la_reunion', $transaction->date_de_la_reunion ? $transaction->date_de_la_reunion->format('Y-m-d') : '') }}" required
                     />
                 </div>
                 <x-input-error :messages="$errors->get('date_de_la_reunion')" class="mt-2 text-danger"/>
@@ -136,7 +141,7 @@
                     <label for="num_reunion">numéro de la réunion</label>
                     <input id="num_reunion" name="num_reunion" type="text"
                            class="form-control input-readonly"
-                           value="{{ old("num_reunion", $n_reunions) }}" required
+                           value="{{ old("num_reunion", $transaction->num_reunion) }}" required
                            readonly
                            placeholder="numéro de la réunion"/>
 
@@ -147,8 +152,8 @@
                 <div class="form-group form-group-default">
                     <label for="id_frequentation">fréquentation</label>
                     <select name="frequentation" onchange="checkfrequentation(this)" id="id_frequentation" class="form-control" required>
-                        <option value="présent(e)">présent(e)</option>
-                        <option value="absent(e)">absent(e)</option>
+                        <option @if(old('frequentation', $transaction->frequentation) === "présent(e)") selected @endif value="présent(e)">présent(e)</option>
+                        <option @if(old('frequentation', $transaction->frequentation) === "absent(e)") selected @endif value="absent(e)">absent(e)</option>
                     </select>
                 </div>
                 <x-input-error :messages="$errors->get('frequentation')" class="mt-2 text-danger"/>
@@ -160,9 +165,9 @@
                         <input id="parts_achetees" name="parts_achetees" type="number"
                                class="form-control"
                                min="1"
-                               max="{{ $avec->maximum_part_achetable }}"
+                               max="{{ $transaction->avec->maximum_part_achetable }}"
                                onchange="checkmaxandmin(this)"
-                               value="{{ old("parts_achetees") }}" required
+                               value="{{ old("parts_achetees", $transaction->parts_achetees) }}" required
                                placeholder="parts achetées par le membre"/>
                     </div>
                     <x-input-error :messages="$errors->get('parts_achetees')" class="mt-2 text-danger"/>
@@ -172,7 +177,7 @@
                         <label for="cotisation">cotisation solidarité</label>
                         <div class="input-group mb-3">
                             <span class="input-group-text">FC</span>
-                            <input type="number" onchange="checkmaxandmin(this)" value="{{ old("cotisation") }}" min="{{ $avec->valeur_montant_solidarite }}" max="{{ $avec->valeur_montant_solidarite }}" id="cotisation" name="cotisation" placeholder=" cotisation solidaire du membre" required class="form-control" aria-label="cotisation">
+                            <input type="number" onchange="checkmaxandmin(this)" value="{{ old("cotisation", $transaction->cotisation) }}" min="{{ $transaction->avec->valeur_montant_solidarite }}" max="{{ $transaction->avec->valeur_montant_solidarite }}" id="cotisation" name="cotisation" placeholder=" cotisation solidaire du membre" required class="form-control" aria-label="cotisation">
                             <span class="input-group-text">.00</span>
                         </div>
                     </div>
@@ -181,7 +186,7 @@
                 <div class="mb-3">
                     <div class="form-group form-group-default m-0">
                         <label for="select_regle">règles de taxations de l'amande</label>
-                        @if($membre->credit > 0)
+                        @if($transaction->membre->credit > 0)
                             <div class="row p-4">
                                 <div class="col-md-3 col-xs-12">
                                     <div class="d-flex">
@@ -192,7 +197,7 @@
                                 <div class="col-md-3 col-xs-12">
                                     <div class="input-group mb-3" id="div_montant_reglement_en_retard" style="display: none">
                                         <span class="input-group-text">Montant de l'amande</span>
-                                        <input type="number" onchange="calculateamanderetardreglement(this)" value="0" min="0" step="any" id="montant_amande_reglement" name="amande_reglement" class="form-control ml-2 amande_a_payer">
+                                        <input type="number" onchange="calculateamanderetardreglement(this)" value="0" min="0" step="any" id="montant_amande_reglement" class="form-control ml-2 amande_a_payer">
                                         <span class="input-group-text">FC</span>
                                     </div>
                                 </div>
@@ -222,56 +227,60 @@
                         <label for="amande">amande</label>
                         <div class="input-group mb-3">
                             <span class="input-group-text">FC</span>
-                            <input type="number" id="amande" name="amande" readonly value="{{ old("amande", 0) }}" placeholder=" amande" class="input-readonly  ml-2 form-control text-danger" style="font-weight: bold" aria-label="amande">
+                            <input type="number" id="amande" name="amande" readonly value="{{ old("amande", $transaction->amande) }}" placeholder=" amande" class="input-readonly  ml-2 form-control text-danger" style="font-weight: bold" aria-label="amande">
                             <span class="input-group-text">.00</span>
                         </div>
                     </div>
                     <x-input-error :messages="$errors->get('amande')" class="mt-2 text-danger"/>
                 </div>
-                @if($modulo_credit == 0 && $membre->credit == 0 || $modulo_credit == 0 && $membre->credit != 0 && $membre->date_de_remboursement > \Carbon\Carbon::today())
+                @if($modulo_credit == 0 && $transaction->membre->credit == 0 || $modulo_credit == 0 && $transaction->membre->credit != 0 && $transaction->membre->date_de_remboursement > \Carbon\Carbon::today())
                     <div class="mb-3" id="div_pret">
-                    <div class="form-group form-group-default">
-                        <label for="credit">donner un prêt</label>
-                        <div class="row">
-                            <div class="input-group mb-3 col-xs-12 col-md-6">
-                                <span class="input-group-text">Crédit</span>
-                                @php
-                                    $triple_epargne = ($membre->part_tot_achetees * $avec->valeur_part) * 3
-                                @endphp
-                                <input type="number" min="0" style="text-align: right" max="{{ $triple_epargne }}" onchange="checkmaxandminpret(this)"  oninput="calculer_taux_interet(this)" id="id_pret" value="{{ old("credit", 0) }}" name="credit" placeholder=" donner un prêt au membre" class="form-control" aria-label="prêt">
-                                <span class="input-group-text">FC</span>
+                        <div class="form-group form-group-default">
+                            <label for="credit">donner un prêt</label>
+                            <div class="row">
+                                <div class="input-group mb-3 col-xs-12 col-md-6">
+                                    <span class="input-group-text">Crédit</span>
+                                    @php
+                                        $triple_epargne = ($transaction->membre->part_tot_achetees * $transaction->avec->valeur_part) * 3
+                                    @endphp
+                                    <input type="number" min="0" max="{{ $triple_epargne }}" onchange="checkmaxandminpret(this)"  oninput="calculer_taux_interet(this)" id="id_pret" value="{{ old("credit", $transaction->credit) }}" name="credit" placeholder=" donner un prêt au membre" class="form-control" style="text-align: right; font-weight: bold" aria-label="prêt">
+                                    <span class="input-group-text">FC</span>
+                                </div>
+                                <div class="input-group mb-3 col-xs-12 col-md-6">
+                                    <span class="input-group-text">Date de remboursement</span>
+                                    <input type="date" id="id_date_remboursement" value="{{ old("date_de_remboursement", $transaction->date_de_remboursement ? $transaction->date_de_remboursement->format("Y-m-d"):'') }}" min="{{ \Carbon\Carbon::tomorrow()->format("Y-m-d") }}" name="date_de_remboursement" class="form-control ml-2" style="text-align: right; font-weight: bold" aria-label="date">
+                                </div>
                             </div>
-                            <div class="input-group mb-3 col-xs-12 col-md-6">
-                                <span class="input-group-text">Date de remboursement</span>
-                                <input type="date" id="id_date_remboursement" style="text-align: right" value="{{ old("date_de_remboursement") }}" min="{{ \Carbon\Carbon::tomorrow()->format("Y-m-d") }}" name="date_de_remboursement" class="form-control" aria-label="date">
+                            <div class="row">
+                                <div class="input-group mb-1 col-xs-12 col-md-6">
+                                    @php
+                                        $interet = ($transaction->credit * $transaction->taux_interet)/100;
+                                    @endphp
+                                    <span class="input-group-text">Montant à rembourser</span>
+                                    <input type="number" id="id_montant_a_rembourser" style="text-align: right; color: #00275b; font-weight: bold" readonly value="{{ old("montant_a_rembourser", $transaction->credit + $interet) }}" class="input-readonly form-control" name="montant_a_rembourser" aria-label="montant à rembourser">
+                                    <span class="input-group-text">FC</span>
+                                </div>
+                                <div class="input-group mb-1 col-xs-12 col-md-6">
+                                    <span class="input-group-text">Taux d'intérêt</span>
+                                    <input type="number" id="id_taux_interet" style="text-align: right; color: orangered; font-weight: bold" readonly value="{{ old("taux_interet", $transaction->taux_interet) }}" name="taux_interet" class="input-readonly form-control" aria-label="taux">
+                                    <span class="input-group-text">%</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="input-group mb-1 col-xs-12 col-md-6">
-                                <span class="input-group-text">Montant à rembourser</span>
-                                <input type="number" id="id_montant_a_rembourser" style="text-align: right; color: #1054ab;" readonly value="{{ old("montant_a_rembourser", 0) }}" class="input-readonly form-control" name="montant_a_rembourser" aria-label="montant à rembourser">
-                                <span class="input-group-text">FC</span>
-                            </div>
-                            <div class="input-group mb-1 col-xs-12 col-md-6">
-                                <span class="input-group-text">Taux d'intérêt</span>
-                                <input type="number" id="id_taux_interet" style="text-align: right; color: orangered" readonly value="{{ old("taux_interet", 0) }}" name="taux_interet" class="input-readonly form-control" aria-label="taux">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
+                        <x-input-error :messages="$errors->get('credit')" class="mt-2 text-danger"/>
                     </div>
-                    <x-input-error :messages="$errors->get('credit')" class="mt-2 text-danger"/>
-                </div>
                 @endif
-                @if($membre->credit != 0)
+
+                @if($transaction->membre->credit != 0)
                     <div class="mb-3">
                         <div class="form-group form-group-default">
                             <label for="remboursement">remboursement du crédit</label>
                             <div class="input-group mb-3">
                                 @php
-                                    $max_remboursement = $membre->credit + $membre->interets_sur_credit;
+                                    $max_remboursement = $transaction->membre->credit + $transaction->membre->interets_sur_credit;
                                 @endphp
                                 <span class="input-group-text">FC</span>
-                                <input type="number" value="{{ old("remboursement", 0) }}" min="0" max="{{ $max_remboursement }}" name="remboursement" placeholder=" remboursement d'un prêt" class="form-control" aria-label="remboursement">
+                                <input type="number" value="{{ old("remboursement", $transaction->credit_rembourse) }}" min="0" max="{{ $max_remboursement }}" name="remboursement" placeholder=" remboursement d'un prêt" class="form-control" aria-label="remboursement">
                                 <span class="input-group-text">.00</span>
                             </div>
                         </div>
@@ -352,7 +361,7 @@
         function calculer_taux_interet(element) {
             if (element.value !== 0) {
                 $.ajax({
-                    url: "../calcul_taux_interet/"+element.value+"/"+{{ $avec->id }},
+                    url: "../calcul_taux_interet/"+element.value+"/"+{{ $transaction->avec->id }},
                     type: "get",
 
                     success: function (data) {
@@ -369,46 +378,6 @@
                     }
                 })
             }
-        }
-
-        function load_semaines(element) {
-            $.ajax({
-                url: '../load_semaines/' + element.value + "/" + {{ $membre->id }} + "/" + {{ $avec->id }},
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    if (data.semaine === "") {
-                        $.notify({
-                            icon: 'icon-bell',
-                            title: 'Avecmanager',
-                            message: 'cette semaine est déjà clôturée',
-                        }, {
-                            type: 'info',
-                            placement: {
-                                from: "bottom",
-                                align: "right"
-                            },
-                            time: 1000,
-                        });
-                    }else {
-                        $('#id_semaine').empty();
-                        $('#id_semaine').append('<option value="' + data.semaine + '">' + data.semaine + '</option>');
-                    }
-                }, error: function (xhr, status, error){
-                    $.notify({
-                        icon: 'icon-bell',
-                        title: 'Avecmanager',
-                        message: 'une erreur est survenue lors du traitement de la requête',
-                    }, {
-                        type: 'danger',
-                        placement: {
-                            from: "bottom",
-                            align: "right"
-                        },
-                        time: 1000,
-                    });
-                }
-            })
         }
     </script>
     <script src="{{ asset("js/personnal_scripts/mouvement_monetaire.js") }}"></script>
